@@ -12,7 +12,7 @@
 const { configure } = require('quasar/wrappers');
 
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx ) {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -21,8 +21,7 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      
-      
+      'axios',
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -60,7 +59,14 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: ctx.dev
+        ? {
+          BASE_URL: 'http://localhost:8787/api'
+        }
+        : {
+          // todo: change this to the actual production URL
+          BASE_URL: 'http://localhost:8787/api'
+        },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
