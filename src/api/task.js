@@ -1,14 +1,17 @@
 import {api} from 'boot/axios';
 
+// 创建新的任务
 const taskCreateReq = {
-  title: null,
-  tagNames: [],
-  completed: null,
-  description: null,
-  taskListId: null,
-  inMyDay: null,
-  isImportant: null,
-  isUrgent: null,
+  title: null, // 任务标题, 必填, 非null, 非空字符串
+  tagNames: [], // 任务标签, 必填, List<String>, 可以为空列表
+  completed: null, // 任务是否已完成, 选填, Boolean
+  description: null, // 任务描述, 必填, String, 可以为空字符串
+  taskListId: null, // 任务所属清单id, 选填, Long,
+  inMyDay: null, // 是否在我的一天中, 选填, Boolean
+  // 优先级信息
+  isImportant: null, // 是否重要, 选填, Boolean
+  isUrgent: null,  // 是否紧急, 选填, Boolean
+  // 时间信息：均选填
   endDate: null,
   endTime: null,
   reminderTimestamp: null,
@@ -17,7 +20,6 @@ const taskCreateReq = {
   expectedExecutionStartPeriod: null,
   expectedExecutionEndPeriod: null
 };
-
 export function createNewTask(taskCreateReq){
     return api.post('/task/create-new-task', task);
 }
