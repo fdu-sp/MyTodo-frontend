@@ -27,6 +27,7 @@
           </template>
         </q-input>
 
+<!--   NOTES: 顶层导航中的菜单     -->
         <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="add" no-caps label="Create" class="q-ml-sm q-px-md">
           <q-menu anchor="top end" self="top end">
             <q-list class="text-grey-8" style="min-width: 100px">
@@ -79,6 +80,7 @@
         </q-toolbar>
         <!--  NOTES:  左侧list的按钮   -->
         <q-list padding>
+<!--          NOTES：下面设置了URL跳转-->
           <q-item v-for="link in links1" :key="link.text" clickable :to="link.url" class="GPL__drawer-item">
             <q-item-section avatar>
               <q-icon :name="link.icon" />
@@ -90,7 +92,7 @@
 
           <q-separator class="q-my-md" />
 
-          <q-item v-for="link in links2" :key="link.text" clickable class="GPL__drawer-item">
+          <q-item v-for="link in links2" :key="link.text" clickable :to="link.url" class="GPL__drawer-item">
             <q-item-section avatar>
               <q-icon :name="link.icon" />
             </q-item-section>
@@ -193,8 +195,8 @@ export default {
         { icon: 'book', text: 'Statistic', url: '/statistic' }
       ],
       links2: [
-        { icon: 'archive', text: 'Archive' },
-        { icon: 'delete', text: 'Trash' }
+        { icon: 'archive', text: 'Archive', url: '/archive'},
+        { icon: 'delete', text: 'Trash', url: '/trash' }
       ],
       links3: [
         { icon: 'settings', text: 'Settings' },
