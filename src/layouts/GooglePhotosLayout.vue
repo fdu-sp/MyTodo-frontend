@@ -90,8 +90,8 @@
             </q-item-section>
           </q-item>
 
-          <q-separator class="q-my-md" />
-
+          <q-separator class="q-my-md" /> <!--  NOTES: 分割线  -->
+<!--    NOTES: 第二个部分的跳转      -->
           <q-item v-for="link in links2" :key="link.text" clickable :to="link.url" class="GPL__drawer-item">
             <q-item-section avatar>
               <q-icon :name="link.icon" />
@@ -103,6 +103,7 @@
 
           <q-separator class="q-my-md" />
 
+<!--    NOTES: 下面这个部分是额外部分的跳转，暂时不用到      -->
           <q-item v-for="link in links3" :key="link.text" clickable class="GPL__drawer-item">
             <q-item-section avatar>
               <q-icon :name="link.icon" />
@@ -114,6 +115,7 @@
 
           <q-separator class="q-my-md" />
 
+<!--    NOTES: 暂时不用，后面做数据的时候可以考虑      -->
           <q-item clickable class="GPL__drawer-item GPL__drawer-item--storage">
             <q-item-section avatar>
               <q-icon name="cloud" />
@@ -129,21 +131,22 @@
     </q-drawer>
 
     <q-page-container class="GPL__page-container">
-      <router-view />
+      <router-view /> <!--  NOTES:  这里是路由的位置  -->
 
       <q-page-sticky v-if="$q.screen.gt.sm" expand position="left">
         <div class="fit q-pt-xl q-px-sm column">
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/dashboard">
             <q-icon size="22px" name="photo" />
             <div class="GPL__side-btn__label">Dashboard</div>
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn">
+
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/todo">
             <q-icon size="22px" name="collections_bookmark" />
             <div class="GPL__side-btn__label">TodoList</div>
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/today">
             <q-icon size="22px" name="assistant" />
             <div class="GPL__side-btn__label">Today</div>
             <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">
@@ -151,12 +154,12 @@
             </q-badge>
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/matrix">
             <q-icon size="22px" name="group" />
             <div class="GPL__side-btn__label">Matrix</div>
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/statistic">
             <q-icon size="22px" name="import_contacts" />
             <div class="GPL__side-btn__label">Statistic</div>
           </q-btn>
@@ -189,8 +192,9 @@ export default {
       links1: [
         // TODO: 设置每个页面的路由
         { icon: 'photo', text: 'Dashboard', url: '/dashboard' },
-        { icon: 'photo_album', text: 'TodoList', url: '/todo' },
         { icon: 'assistant', text: 'Today', url: '/today' },
+        { icon: 'photo_album', text: 'TodoList', url: '/todo' },
+        { icon: '', text: 'Group', url: '/group' },
         { icon: 'people', text: 'Matrix', url: '/matrix' },
         { icon: 'book', text: 'Statistic', url: '/statistic' }
       ],
@@ -198,6 +202,7 @@ export default {
         { icon: 'archive', text: 'Archive', url: '/archive'},
         { icon: 'delete', text: 'Trash', url: '/trash' }
       ],
+      // TODO: 下面这个link3暂时不设置URL和page
       links3: [
         { icon: 'settings', text: 'Settings' },
         { icon: 'help', text: 'Help & Feedback' },
