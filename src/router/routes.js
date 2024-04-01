@@ -1,10 +1,13 @@
+import ToDoList from "pages/TodoListPage.vue";
+
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/GoogleNewsLayout.vue'),
-    // children: [
-    //   { path: '', component: () => import('pages/IndexPage.vue') }
-    // ]
+    component: () => import('layouts/GooglePhotosLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '/todo', component: (ToDoList) }
+    ]
   },
 
   // Always leave this as last one,
