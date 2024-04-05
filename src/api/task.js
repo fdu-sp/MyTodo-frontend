@@ -77,3 +77,12 @@ export function getAllTasksWithSimpleInfoByListId(listId){
 export function getAllTasksWithSimpleInfoByTagId(tagId){
     return api.get(`/task/simple/get-all-tasks/${tagId}`);
 }
+
+// /api/task/simple/get-all-tasks-by-tags
+// 根据标签过滤（同时具有多个标签的）待办事项
+const tags = {
+  tagIds: [] // 标签id列表, 必填, List<Long>, 不能为NULL，不可以为空列表
+}
+export function getAllTasksByTags(tags){
+    return api.post('/task/simple/get-all-tasks-by-tags', tags);
+}
