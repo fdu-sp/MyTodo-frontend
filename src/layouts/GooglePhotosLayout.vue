@@ -2,19 +2,20 @@
   <q-layout view="lHh Lpr fff" class="bg-grey-1">
     <q-header elevated class="bg-white text-grey-8" height-hint="64">
       <q-toolbar class="GPL__toolbar" style="height: 64px">
-        <q-btn
-          flat
-          dense
-          round
-          @click="toggleLeftDrawer"
-          aria-label="Menu"
-          icon="menu"
-          class="q-mx-md"
-        />
+<!--        NOTE: 打开侧边栏按钮-->
+<!--        <q-btn-->
+<!--          flat-->
+<!--          dense-->
+<!--          round-->
+<!--          @click="toggleLeftDrawer"-->
+<!--          aria-label="Menu"-->
+<!--          icon="menu"-->
+<!--          class="q-mx-md"-->
+<!--        />-->
 
         <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
 <!--          <img src="https://cdn.quasar.dev/img/layout-gallery/logo-google.svg">-->
-          <span class="q-ml-sm">𝑴𝒚𝑻𝒐𝒅𝒐</span>
+          <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>
         </q-toolbar-title>
 
         <q-space />
@@ -65,74 +66,75 @@
     </q-header>
 
 <!-- NOTES：   创建一个侧边抽屉导航-->
-    <q-drawer
-      v-model="leftDrawerOpen"
-      bordered
-      behavior="mobile"
-      @click="leftDrawerOpen = false"
-    >
+<!--    <q-drawer-->
+<!--      v-model="leftDrawerOpen"-->
+<!--      bordered-->
+<!--      behavior="mobile"-->
+<!--      @click="leftDrawerOpen = false"-->
+<!--    >-->
 
-      <q-scroll-area class="fit">
-        <q-toolbar class="GPL__toolbar">
-          <q-toolbar-title class="row items-center text-grey-8">
-            <span class="q-ml-sm">𝑴𝒚𝑻𝒐𝒅𝒐</span>
-          </q-toolbar-title>
-        </q-toolbar>
-        <!--  NOTES:  左侧list的按钮   -->
-        <q-list padding>
-<!--          NOTES：下面设置了URL跳转-->
-          <q-item v-for="link in links1" :key="link.text" clickable :to="link.url" class="GPL__drawer-item">
-            <q-item-section avatar>
-              <q-icon :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
+<!--      <q-scroll-area class="fit">-->
+<!--        <q-toolbar class="GPL__toolbar">-->
+<!--          <q-toolbar-title class="row items-center text-grey-8">-->
+<!--            <span class="q-ml-sm">𝑴𝒚𝑻𝒐𝒅𝒐</span>-->
+<!--          </q-toolbar-title>-->
+<!--        </q-toolbar>-->
+<!--        &lt;!&ndash;  NOTES:  左侧list的按钮   &ndash;&gt;-->
+<!--        <q-list padding>-->
+<!--&lt;!&ndash;          NOTES：下面设置了URL跳转&ndash;&gt;-->
+<!--          <q-item v-for="link in links1" :key="link.text" clickable :to="link.url" class="GPL__drawer-item">-->
+<!--            <q-item-section avatar>-->
+<!--              <q-icon :name="link.icon" />-->
+<!--            </q-item-section>-->
+<!--            <q-item-section>-->
+<!--              <q-item-label>{{ link.text }}</q-item-label>-->
+<!--            </q-item-section>-->
+<!--          </q-item>-->
 
-          <q-separator class="q-my-md" /> <!--  NOTES: 分割线  -->
-<!--    NOTES: 第二个部分的跳转      -->
-          <q-item v-for="link in links2" :key="link.text" clickable :to="link.url" class="GPL__drawer-item">
-            <q-item-section avatar>
-              <q-icon :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
+<!--          <q-separator class="q-my-md" /> &lt;!&ndash;  NOTES: 分割线  &ndash;&gt;-->
+<!--&lt;!&ndash;    NOTES: 第二个部分的跳转      &ndash;&gt;-->
+<!--          <q-item v-for="link in links2" :key="link.text" clickable :to="link.url" class="GPL__drawer-item">-->
+<!--            <q-item-section avatar>-->
+<!--              <q-icon :name="link.icon" />-->
+<!--            </q-item-section>-->
+<!--            <q-item-section>-->
+<!--              <q-item-label>{{ link.text }}</q-item-label>-->
+<!--            </q-item-section>-->
+<!--          </q-item>-->
 
-          <q-separator class="q-my-md" />
+<!--          <q-separator class="q-my-md" />-->
 
-<!--    NOTES: 下面这个部分是额外部分的跳转，暂时不用到      -->
-          <q-item v-for="link in links3" :key="link.text" clickable class="GPL__drawer-item">
-            <q-item-section avatar>
-              <q-icon :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
+<!--&lt;!&ndash;    NOTES: 下面这个部分是额外部分的跳转，暂时不用到      &ndash;&gt;-->
+<!--          <q-item v-for="link in links3" :key="link.text" clickable class="GPL__drawer-item">-->
+<!--            <q-item-section avatar>-->
+<!--              <q-icon :name="link.icon" />-->
+<!--            </q-item-section>-->
+<!--            <q-item-section>-->
+<!--              <q-item-label>{{ link.text }}</q-item-label>-->
+<!--            </q-item-section>-->
+<!--          </q-item>-->
 
-          <q-separator class="q-my-md" />
+<!--          <q-separator class="q-my-md" />-->
 
-<!--    NOTES: 暂时不用，后面做数据的时候可以考虑      -->
-          <q-item clickable class="GPL__drawer-item GPL__drawer-item--storage">
-            <q-item-section avatar>
-              <q-icon name="cloud" />
-            </q-item-section>
-            <q-item-section top>
-              <q-item-label>Storage</q-item-label>
-              <q-linear-progress :value="storage" class="q-my-sm" />
-              <q-item-label caption>26 of 150 </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-scroll-area>
-    </q-drawer>
+<!--&lt;!&ndash;    NOTES: 暂时不用，后面做数据的时候可以考虑      &ndash;&gt;-->
+<!--          <q-item clickable class="GPL__drawer-item GPL__drawer-item&#45;&#45;storage">-->
+<!--            <q-item-section avatar>-->
+<!--              <q-icon name="cloud" />-->
+<!--            </q-item-section>-->
+<!--            <q-item-section top>-->
+<!--              <q-item-label>Storage</q-item-label>-->
+<!--              <q-linear-progress :value="storage" class="q-my-sm" />-->
+<!--              <q-item-label caption>26 of 150 </q-item-label>-->
+<!--            </q-item-section>-->
+<!--          </q-item>-->
+<!--        </q-list>-->
+<!--      </q-scroll-area>-->
+<!--    </q-drawer>-->
 
     <q-page-container class="GPL__page-container">
       <router-view /> <!--  NOTES:  这里是路由的位置  -->
 
+<!--       NOTES: 侧边栏（非折叠）-->
       <q-page-sticky v-if="$q.screen.gt.sm" expand position="left">
         <div class="fit q-pt-xl q-px-sm column">
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/dashboard">
