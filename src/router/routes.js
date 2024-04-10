@@ -1,4 +1,4 @@
-import ToDoList from "pages/TodoListPage.vue";
+import ToDoList from "pages/TodoPage.vue";
 
 const routes = [
   {
