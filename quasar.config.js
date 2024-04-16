@@ -101,7 +101,7 @@ module.exports = configure(function (ctx) {
         notify: { /* 参考 API 卡片中的 QuasarConfOptions  */}
       },
 
-      // iconSet: 'material-icons', // Quasar icon set
+      iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
