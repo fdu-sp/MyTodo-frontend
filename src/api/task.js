@@ -20,62 +20,63 @@ const taskCreateReq = {
   expectedExecutionStartPeriod: null,
   expectedExecutionEndPeriod: null
 };
-export function createNewTask(taskCreateReq){
-    return api.post('/task/create-new-task', task);
+
+export function createNewTask(taskCreateReq) {
+  return api.post('/task/create-new-task', task);
 }
 
 // /api/task/simple/get-info/{task-id}
 // 获取指定id的task信息(简洁)
-export function getSimpleTaskInfo(taskId){
-    return api.get(`/task/simple/get-info/${taskId}`);
+export function getSimpleTaskInfo(taskId) {
+  return api.get(`/task/simple/get-info/${taskId}`);
 }
 
 // /api/task/detail/get-info/{task-id}
 // 获取指定id的task信息(详细)
-export function getDetailTaskInfo(taskId){
-    return api.get(`/task/detail/get-info/${taskId}`);
+export function getDetailTaskInfo(taskId) {
+  return api.get(`/task/detail/get-info/${taskId}`);
 }
 
 // /api/task/simple/get-all-tasks
 // 简洁-获取所有task信息
-export function getAllTasksWithSimpleInfo(){
-    return api.get('/task/simple/get-all-tasks');
+export function getAllTasksWithSimpleInfo() {
+  return api.get('/task/simple/get-all-tasks');
 }
 
 // /api/task/detail/get-all-tasks
 // 详细-获取所有task信息
-export function getAllTasksWithDetailInfo(){
-    return api.get('/task/detail/get-all-tasks');
+export function getAllTasksWithDetailInfo() {
+  return api.get('/task/detail/get-all-tasks');
 }
 
 // /api/task/complete/{task-id}
 // 标记任务已完成
-export function completeTask(taskId){
-    return api.post(`/task/complete/${taskId}`);
+export function completeTask(taskId) {
+  return api.post(`/task/complete/${taskId}`);
 }
 
 // /api/task/un-complete/{task-id}
 // 标记任务未完成
-export function unCompleteTask(taskId){
-    return api.post(`/task/un-complete/${taskId}`);
+export function unCompleteTask(taskId) {
+  return api.post(`/task/un-complete/${taskId}`);
 }
 
 // /api/task/delete/{task-id}
 // 删除指定id的task
-export function deleteTask(taskId){
-    return api.delete(`/task/delete/${taskId}`);
+export function deleteTask(taskId) {
+  return api.delete(`/task/delete/${taskId}`);
 }
 
 // /api/task/simple/get-all-tasks-by-list/{list-id}
 // 简洁-获取指定清单中的所有task(简洁信息)
-export function getAllTasksWithSimpleInfoByListId(listId){
-    return api.get(`/task/simple/get-all-tasks-by-list/${listId}`);
+export function getAllTasksWithSimpleInfoByListId(listId) {
+  return api.get(`/task/simple/get-all-tasks-by-list/${listId}`);
 }
 
 // /api/task/simple/get-all-tasks/{tag-id}
 // 简洁-获取指定tag下的所有task信息
-export function getAllTasksWithSimpleInfoByTagId(tagId){
-    return api.get(`/task/simple/get-all-tasks/${tagId}`);
+export function getAllTasksWithSimpleInfoByTagId(tagId) {
+  return api.get(`/task/simple/get-all-tasks/${tagId}`);
 }
 
 // /api/task/simple/get-all-tasks-by-tags
@@ -83,6 +84,7 @@ export function getAllTasksWithSimpleInfoByTagId(tagId){
 const tags = {
   tagIds: [] // 标签id列表, 必填, List<Long>, 不能为NULL，不可以为空列表
 }
-export function getAllTasksByTags(tags){
-    return api.post('/task/simple/get-all-tasks-by-tags', tags);
+
+export function getAllTasksByTags(tags) {
+  return api.post('/task/simple/get-all-tasks-by-tags', tags);
 }
