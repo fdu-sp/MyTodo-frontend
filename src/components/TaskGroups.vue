@@ -3,24 +3,26 @@
     <q-item
       v-for="group in taskGroups"
       :key="group.id"
-      clickable
-      v-ripple
-      @click="toggleGroup(group.id)"
       class="group-item">
-      <q-item-section>
-        <q-item-label>{{ group.name }} ({{ group.taskLists.length }} lists)</q-item-label>
+      <q-item-section class="group-item-top">
+        <q-item-label class="group-item-name">{{ group.name }} ({{ group.taskLists.length }} 个清单)</q-item-label>
         <q-icon
           name="arrow_drop_down"
+          size="lg"
           class="q-ml-auto arrow-icon"
+          v-ripple
+          @click="toggleGroup(group.id)"
           :class="{ 'rotated': isGroupExpanded(group.id) }"/>
       </q-item-section>
       <div v-if="isGroupExpanded(group.id)" class="list-container">
         <q-item
           v-for="list in group.taskLists"
           :key="list.id"
+          clickable
+          v-ripple
           class="list-item">
           <q-item-section>
-            <q-item-label>{{ list.name }} ({{ list.count }} tasks)</q-item-label>
+            <q-item-label>{{ list.name }} ({{ list.count }} 个任务)</q-item-label>
           </q-item-section>
         </q-item>
       </div>
@@ -59,8 +61,24 @@ function isGroupExpanded(groupId) {
 </script>
 
 <style scoped>
+.rounded-borders {
+  font-size: 18px;
+}
+
 .group-item {
   border-bottom: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+}
+
+.group-item-top {
+  display: flex;
+  flex-direction: row;
+}
+
+.group-item-name {
+  display: flex;
+  align-items: center;
 }
 
 .arrow-icon {
