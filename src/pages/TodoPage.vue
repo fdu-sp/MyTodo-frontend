@@ -52,16 +52,16 @@ const splitterModel2 = ref(50); // 任务列表和任务详情之间的分割比
 
 // 根据分组ID加载任务列表
 function loadTasks(groupId) {
-  getAllTasksWithSimpleInfoByListId(groupId).then(response => {
-    tasks.value = response.data;
+  getAllTasksWithSimpleInfoByListId(groupId).then(data => {
+    tasks.value = data.object;
     selectedTask.value = null;  // 当分组改变时重置任务详情
   });
 }
 
 // 根据任务ID加载任务详情
 function loadTaskDetails(taskId) {
-  getDetailTaskInfo(taskId).then(response => {
-    selectedTask.value = response.data;
+  getDetailTaskInfo(taskId).then(data => {
+    selectedTask.value = data.object;
   });
 }
 </script>
