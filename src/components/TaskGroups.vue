@@ -4,14 +4,15 @@
       v-for="group in taskGroups"
       :key="group.id"
       class="group-item">
-      <q-item-section class="group-item-top">
+      <q-item-section
+        class="group-item-top"
+        clickable
+        @click="toggleGroup(group.id)">
         <q-item-label class="group-item-name">{{ group.name }} ({{ group.taskLists.length }} 个清单)</q-item-label>
         <q-icon
           name="arrow_drop_down"
           size="lg"
           class="q-ml-auto arrow-icon"
-          v-ripple
-          @click="toggleGroup(group.id)"
           :class="{ 'rotated': isGroupExpanded(group.id) }"/>
       </q-item-section>
       <div v-if="isGroupExpanded(group.id)" class="list-container">
@@ -19,6 +20,7 @@
           v-for="list in group.taskLists"
           :key="list.id"
           clickable
+          @click="selectGroup(list.id)"
           v-ripple
           class="list-item">
           <q-item-section>
@@ -32,19 +34,14 @@
 
 <script setup>
 import {ref} from 'vue';
-// 导入 API
-import {getAllTaskGroupsWithSimpleInfo} from 'src/api/task-group';
 
-// 响应式数据：任务分组列表
-const taskGroups = ref([]);
-const expandedGroups = ref(new Set());
-
-// 获取所有任务分组
-getAllTaskGroupsWithSimpleInfo().then(data => {
-  if (data.success && data.code === 200) {
-    taskGroups.value = data.object;
-  }
+const props = defineProps({
+  selectedListId: String,
+  taskGroups: Array
 });
+
+// 响应式数据：展开的分组ID
+const expandedGroups = ref(new Set());
 
 function toggleGroup(groupId) {
   if (expandedGroups.value.has(groupId)) {
@@ -58,6 +55,12 @@ function isGroupExpanded(groupId) {
   return expandedGroups.value.has(groupId);
 }
 
+// 定义可以发射的事件列表
+const emit = defineEmits(['list-selected']);
+
+function selectGroup(groupId) {
+  emit('list-selected', groupId);
+}
 </script>
 
 <style scoped>
