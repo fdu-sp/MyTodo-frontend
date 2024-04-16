@@ -31,6 +31,50 @@ export function getSimpleTaskInfo(taskId) {
   return api.get(`/task/simple/get-info/${taskId}`);
 }
 
+/*
+const TaskDetailResp = {
+  id: 123,
+  title: "Complete the project",
+  completed: false,
+  completedTime: null,
+  archived: false,
+  tags: [
+    {
+      id: 1,
+      tagName: "Urgent",
+      tagPath: "/tags/urgent"
+    },
+    {
+      id: 2,
+      tagName: "Home",
+      tagPath: "/tags/home"
+    }
+  ],
+  taskListId: 101,
+  taskListName: "Work",
+  inMyDay: false,
+  taskContentInfo: {
+    description: "Complete the project deliverables as outlined.",
+    createTime: "2024-04-15T08:00:00Z",
+    updateTime: "2024-04-16T09:00:00Z"
+  },
+  taskPriorityInfo: {
+    isImportant: true,
+    isUrgent: true
+  },
+  taskTimeInfo: {
+    endDate: "2024-04-20",
+    endTime: "17:00:00",
+    reminderTimestamp: "2024-04-20T15:00:00Z",
+    activateCountdown: true,
+    expectedExecutionDate: "2024-04-18",
+    expectedExecutionStartPeriod: "09:00:00",
+    expectedExecutionEndPeriod: "11:00:00"
+  },
+  createTime: "2024-04-10T07:30:00Z",
+  updateTime: "2024-04-15T18:45:00Z"
+};
+* */
 // /api/task/detail/get-info/{task-id}
 // 获取指定id的task信息(详细)
 export function getDetailTaskInfo(taskId) {
