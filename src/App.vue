@@ -10,9 +10,10 @@ defineOptions({
 });
 
 helloRequest()
-  .then(res => {
+  .then(data => {
     // todo 弹出提示消息
-    console.log(res.data.object);
+    console.log(data);
+    console.log(data.object);
   })
   .catch(error => {
     console.error(error);
