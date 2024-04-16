@@ -1,11 +1,11 @@
 <template>
-  <div v-if="task" class="task-details">
+  <div v-if="taskWithDetailInfo" class="task-details">
     <!-- 任务标题 -->
-    <h6 :class="{'important': task.taskPriorityInfo.isImportant}">{{ task.title }}</h6>
+    <h6 :class="{'important': taskWithDetailInfo.taskPriorityInfo.isImportant}">{{ taskWithDetailInfo.title }}</h6>
     <!-- 任务描述 -->
-    <p>{{ task.taskContentInfo.description }}</p>
+    <p>{{ taskWithDetailInfo.taskContentInfo.description }}</p>
     <!-- 任务截止日期 -->
-    <p class="due-date">Due Date: <strong>{{ task.taskTimeInfo.endDate }}</strong></p>
+    <p class="due-date">Due Date: <strong>{{ taskWithDetailInfo.taskTimeInfo.endDate }}</strong></p>
     <!-- 更多任务详情可以在这里添加 -->
   </div>
   <div v-else class="no-task">
@@ -18,8 +18,9 @@
 <script setup>
 import {defineProps} from 'vue';
 
+// 该组件需要使用 taskWithDetailInfo
 const props = defineProps({
-  task: Object
+  taskWithDetailInfo: Object
 });
 </script>
 

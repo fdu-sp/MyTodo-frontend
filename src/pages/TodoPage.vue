@@ -24,7 +24,7 @@
           <template v-slot:after>
             <div class="col-12">
               <!-- 任务详情组件：显示选中任务的详情 -->
-              <task-details :task="selectedTask"/>
+              <task-details :taskWithDetailInfo="selectedTask"/>
             </div>
           </template>
         </q-splitter>
