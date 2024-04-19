@@ -1,7 +1,6 @@
-import { boot } from 'quasar/wrappers'
+import {boot} from 'quasar/wrappers'
 import axios from 'axios'
-import { LoadingBar } from 'quasar'
-import {Notify} from "quasar";
+import {LoadingBar, Notify} from 'quasar'
 
 const api = axios.create({
   baseURL: process.env.BASE_URL,
@@ -60,7 +59,7 @@ api.interceptors.response.use(
         type: 'warning',
         position: 'top',
         timeout: 3000,
-        actions: [{ label: '前往登录', color: 'white', handler: () => router.push('/login') }]
+        actions: [{label: '前往登录', color: 'white', handler: () => router.push('/login')}]
       });
     } else if (code === 500) {
       // 服务器内部错误
@@ -79,7 +78,7 @@ api.interceptors.response.use(
         position: 'top',
         timeout: 3000,
       });
-      return Promise.reject("error");
+      return Promise.reject(new Error(msg));
     } else {
       // code = 200 时
       if (res.data.uxApi) {
@@ -103,7 +102,7 @@ api.interceptors.response.use(
   error => {
     LoadingBar.stop();
     console.error("err: " + error);
-    let { message } = error;
+    let {message} = error;
     if (message.includes("Network Error")) {
       message = "服务器连接异常";
     } else if (message.includes("timeout")) {
@@ -122,7 +121,7 @@ api.interceptors.response.use(
   }
 );
 
-export default boot(({ app }) => {
+export default boot(({app}) => {
   // 通过this.$axios和this.$API在Vue文件（Options API）内使用
 
   app.config.globalProperties.$axios = axios
@@ -134,4 +133,4 @@ export default boot(({ app }) => {
   //       这样您就可以轻松地根据应用程序的api执行请求
 })
 
-export { axios, api }
+export {axios, api}
