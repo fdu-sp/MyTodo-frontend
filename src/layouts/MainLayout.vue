@@ -18,21 +18,29 @@
         </q-input>
 
 <!--   NOTES: 顶层导航中的菜单     -->
-        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="play_circle_filled" no-caps label="Start Timer" class="q-ml-sm q-px-md">
-          <q-menu anchor="top end" self="top end">
-            <q-list class="text-grey-8" style="min-width: 100px">
-<!--              <q-item aria-hidden="true">-->
-<!--                <q-item-section class="text-uppercase text-grey-7" style="font-size: 0.7rem">Create New</q-item-section>-->
-<!--              </q-item>-->
-<!--              <q-item v-for="menu in createMenu" :key="menu.text" clickable v-close-popup aria-hidden="true">-->
-<!--                <q-item-section avatar>-->
-<!--                  <q-icon :name="menu.icon" />-->
-<!--                </q-item-section>-->
-<!--                <q-item-section>{{ menu.text }}</q-item-section>-->
-<!--              </q-item>-->
-            </q-list>
-          </q-menu>
-        </q-btn>
+<!--        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="start_circle" no-caps label="Start Timer" class="q-ml-sm q-px-md">-->
+<!--          <q-menu anchor="top end" self="top end">-->
+<!--            <q-list class="text-grey-8" style="min-width: 100px">-->
+<!--            </q-list>-->
+<!--          </q-menu>-->
+<!--        </q-btn>-->
+        <div class="GPL__timer-container">
+          <q-btn
+            flat
+            dense
+            no-wrap
+            color="primary"
+            :icon="timerRunning ? 'stop_circle' : 'play_circle'"
+            no-caps
+            :label="timerRunning ? 'Stop Timer' : 'Start Timer'"
+            @click="toggleTimer"
+            class="q-ml-sm q-px-md"
+          />
+          <div class="GPL__timer-display">
+            <!-- 显示计时时间 -->
+            {{ formattedTime }}
+          </div>
+        </div>
 
         <q-space />
 
@@ -95,7 +103,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 
 export default {
   name: 'GooglePhotosLayout',
@@ -109,10 +117,67 @@ export default {
       leftDrawerOpen.value = !leftDrawerOpen.value
     }
 
+    // NOTES：计时器相关
+    const timerRunning = ref(false);
+    const startTime = ref(0);
+    const currentTime = ref(0);
+    let timerInterval = null;
+
+    // 计算格式化后的时间
+    const formattedTime = computed(() => {
+      const totalSeconds = Math.floor((currentTime.value - startTime.value) / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    });
+
+    function toggleTimer() {
+      if (timerRunning.value) {
+        stopTimer();
+      } else {
+        if (!timerInterval) { // Ensure timer starts from 00:00:00
+          currentTime.value = startTime.value = Date.now();
+        }
+        startTimer();
+      }
+    }
+
+
+    function startTimer() {
+      timerRunning.value = true;
+      timerInterval = setInterval(() => {
+        currentTime.value = Date.now();
+      }, 1000);
+      // TODO: 添加函数发送当前时间到后端
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null; // Clear interval ID when stopped
+      timerRunning.value = false;
+      // 设置一个 0.5 秒的延时来重置时间
+      setTimeout(() => {
+        currentTime.value = startTime.value; // 重置时间为初始状态
+      }, 500);
+      // TODO: 添加函数发送当前时间到后端
+    }
+
+    // 组件销毁时清除计时器
+    onUnmounted(() => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    });
+
+
     return {
       leftDrawerOpen,
       search,
       storage,
+      timerRunning,
+      formattedTime,
+      toggleTimer,
 
       links1: [
         // TODO: 设置每个页面的路由
@@ -140,50 +205,76 @@ export default {
 
       toggleLeftDrawer
     }
+
+
   }
 }
 </script>
 
-<style lang="sass">
-.GPL
+<style>
+.GPL__toolbar {
+  height: 64px;
+}
 
-  &__toolbar
-    height: 64px
+.GPL__toolbar-input {
+  width: 35%;
+}
 
-  &__toolbar-input
-    width: 35%
+.GPL__drawer-item {
+  line-height: 24px;
+  border-radius: 0 24px 24px 0;
+  margin-right: 12px;
+}
 
-  &__drawer-item
-    line-height: 24px
-    border-radius: 0 24px 24px 0
-    margin-right: 12px
+.GPL__drawer-item .q-item__section--avatar {
+  padding-left: 12px;
+  line-height: 24px;
+  border-radius: 0 24px 24px 0;
+  margin-right: 12px;
+}
 
-    .q-item__section--avatar
-      padding-left: 12px
-      .q-icon
-        color: #5f6368
+.GPL__drawer-item .q-item__section--avatar .q-icon {
+  color: #5f6368;
+}
 
-    .q-item__label:not(.q-item__label--caption)
-      color: #3c4043
-      letter-spacing: .01785714em
-      font-size: .875rem
-      font-weight: 500
-      line-height: 1.25rem
+.GPL__drawer-item .q-item__label:not(.q-item__label--caption) {
+  color: #3c4043;
+  letter-spacing: .01785714em;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
 
-    &--storage
-      border-radius: 0
-      margin-right: 0
-      padding-top: 24px
-      padding-bottom: 24px
+.GPL__drawer-item--storage {
+  border-radius: 0;
+  margin-right: 0;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
 
-  &__side-btn
-    &__label
-      font-size: 12px
-      line-height: 24px
-      letter-spacing: .01785714em
-      font-weight: 500
+.GPL__side-btn__label {
+  font-size: 12px;
+  line-height: 24px;
+  letter-spacing: .01785714em;
+  font-weight: 500;
+}
 
-  @media (min-width: 1024px)
-    &__page-container
-      padding-left: 94px
+@media (min-width: 1024px) {
+  .GPL__page-container {
+    padding-left: 94px;
+  }
+}
+
+.GPL__timer-container {
+  display: flex;
+  align-items: center;
+}
+
+.GPL__timer-display {
+  margin-left: 16px;
+  font-size: 1.25em;
+  color: #1976D2;
+  font-family: 'Roboto', sans-serif;
+}
+
 </style>
