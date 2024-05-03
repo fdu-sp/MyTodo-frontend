@@ -18,18 +18,18 @@
         </q-input>
 
 <!--   NOTES: 顶层导航中的菜单     -->
-        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="add" no-caps label="Create" class="q-ml-sm q-px-md">
+        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="play_circle_filled" no-caps label="Start Timer" class="q-ml-sm q-px-md">
           <q-menu anchor="top end" self="top end">
             <q-list class="text-grey-8" style="min-width: 100px">
-              <q-item aria-hidden="true">
-                <q-item-section class="text-uppercase text-grey-7" style="font-size: 0.7rem">Create New</q-item-section>
-              </q-item>
-              <q-item v-for="menu in createMenu" :key="menu.text" clickable v-close-popup aria-hidden="true">
-                <q-item-section avatar>
-                  <q-icon :name="menu.icon" />
-                </q-item-section>
-                <q-item-section>{{ menu.text }}</q-item-section>
-              </q-item>
+<!--              <q-item aria-hidden="true">-->
+<!--                <q-item-section class="text-uppercase text-grey-7" style="font-size: 0.7rem">Create New</q-item-section>-->
+<!--              </q-item>-->
+<!--              <q-item v-for="menu in createMenu" :key="menu.text" clickable v-close-popup aria-hidden="true">-->
+<!--                <q-item-section avatar>-->
+<!--                  <q-icon :name="menu.icon" />-->
+<!--                </q-item-section>-->
+<!--                <q-item-section>{{ menu.text }}</q-item-section>-->
+<!--              </q-item>-->
             </q-list>
           </q-menu>
         </q-btn>
@@ -133,10 +133,10 @@ export default {
         { icon: 'help', text: 'Help & Feedback' },
         { icon: 'get_app', text: 'App Downloads' }
       ],
-      createMenu: [
-        { icon: 'photo_album', text: 'Today Todo' },
-        { icon: 'people', text: 'New Todo' },
-      ],
+      // createMenu: [
+      //   { icon: 'photo_album', text: 'Today Todo' },
+      //   { icon: 'people', text: 'New Todo' },
+      // ],
 
       toggleLeftDrawer
     }
