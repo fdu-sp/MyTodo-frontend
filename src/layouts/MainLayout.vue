@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr fff" class="bg-grey-1">
     <q-header elevated class="bg-white text-grey-8" height-hint="64">
-      <q-toolbar class="GPL__toolbar" style="height: 64px">
+      <q-toolbar class="toolbar" style="height: 64px">
         <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
 <!--          <img src="https://cdn.quasar.dev/img/layout-gallery/logo-google.svg">-->
           <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>
@@ -10,12 +10,24 @@
         <q-space />
 
 <!--        TODO：全局搜索功能   -->
-        <q-input class="GPL__toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">
+        <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">
           <template v-slot:prepend>
             <q-icon v-if="search === ''" name="search" />
             <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''" />
           </template>
         </q-input>
+
+        <div class="current-task" :class="{ 'no-task': !selectedTaskId }">
+          <q-chip
+            outline
+            color="primary"
+            text-color="white"
+            icon="event"
+            :class="{ 'no-task-chip': !selectedTaskId }"
+          >
+            当前任务：{{ currentTaskName }}
+          </q-chip>
+        </div>
 
 <!--   NOTES: 顶层导航中的菜单     -->
 <!--        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="start_circle" no-caps label="Start Timer" class="q-ml-sm q-px-md">-->
@@ -24,7 +36,7 @@
 <!--            </q-list>-->
 <!--          </q-menu>-->
 <!--        </q-btn>-->
-        <div class="GPL__timer-container">
+        <div class="timer-container">
           <q-btn
             flat
             dense
@@ -36,7 +48,7 @@
             @click="toggleTimer"
             class="q-ml-sm q-px-md"
           />
-          <div class="GPL__timer-display">
+          <div class="timer-display">
             <!-- 显示计时时间 -->
             {{ formattedTime }}
           </div>
@@ -62,39 +74,39 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container class="GPL__page-container">
+    <q-page-container class="page-container">
       <router-view /> <!--  NOTES:  这里是路由的位置  -->
 
 <!--       NOTES: 侧边栏（非折叠）-->
       <q-page-sticky v-if="$q.screen.gt.sm" expand position="left">
         <div class="fit q-pt-xl q-px-sm column">
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/dashboard">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/dashboard">
             <q-icon size="22px" name="photo" />
-            <div class="GPL__side-btn__label">Dashboard</div>
+            <div class="side-btn__label">Dashboard</div>
           </q-btn>
 
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/todo">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/todo">
             <q-icon size="22px" name="collections_bookmark" />
-            <div class="GPL__side-btn__label">TodoList</div>
+            <div class="side-btn__label">TodoList</div>
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/today">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/today">
             <q-icon size="22px" name="assistant" />
-            <div class="GPL__side-btn__label">Today</div>
+            <div class="side-btn__label">Today</div>
             <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">
               1
             </q-badge>
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/matrix">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/matrix">
             <q-icon size="22px" name="group" />
-            <div class="GPL__side-btn__label">Matrix</div>
+            <div class="side-btn__label">Matrix</div>
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="GPL__side-btn" clickable to="/statistic">
+          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/statistic">
             <q-icon size="22px" name="import_contacts" />
-            <div class="GPL__side-btn__label">Statistic</div>
+            <div class="side-btn__label">Statistic</div>
           </q-btn>
         </div>
       </q-page-sticky>
@@ -103,7 +115,7 @@
 </template>
 
 <script>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted, watch } from 'vue'
 
 export default {
   name: 'GooglePhotosLayout',
@@ -115,6 +127,30 @@ export default {
 
     function toggleLeftDrawer () {
       leftDrawerOpen.value = !leftDrawerOpen.value
+    }
+
+    // NOTES：任务相关
+    // 响应式数据：当前选中的任务ID
+    const selectedTaskId = ref(null);
+
+    // 根据选中的任务ID获取任务名称
+    const currentTaskName = ref('未选择任务');
+
+    // 监听选中的任务ID变化，更新当前任务名称
+    watch(selectedTaskId, (newVal) => {
+      if (newVal) {
+        // 根据选中的任务ID获取任务名称，这里假设有个函数根据任务ID获取任务名称
+        currentTaskName.value = getTaskName(newVal);
+      } else {
+        currentTaskName.value = '未选择任务';
+      }
+    });
+
+    // 假设有个函数根据任务ID获取任务名称的逻辑
+    function getTaskName(taskId) {
+      // 这里假设有个函数根据任务ID获取任务名称的逻辑
+      // 你需要根据实际情况实现这个函数
+      return '新建文件夹';
     }
 
     // NOTES：计时器相关
@@ -212,32 +248,32 @@ export default {
 </script>
 
 <style>
-.GPL__toolbar {
+.toolbar {
   height: 64px;
 }
 
-.GPL__toolbar-input {
-  width: 35%;
+.toolbar-input {
+  width: 15%;
 }
 
-.GPL__drawer-item {
+.drawer-item {
   line-height: 24px;
   border-radius: 0 24px 24px 0;
   margin-right: 12px;
 }
 
-.GPL__drawer-item .q-item__section--avatar {
+.drawer-item .q-item__section--avatar {
   padding-left: 12px;
   line-height: 24px;
   border-radius: 0 24px 24px 0;
   margin-right: 12px;
 }
 
-.GPL__drawer-item .q-item__section--avatar .q-icon {
+.drawer-item .q-item__section--avatar .q-icon {
   color: #5f6368;
 }
 
-.GPL__drawer-item .q-item__label:not(.q-item__label--caption) {
+.drawer-item .q-item__label:not(.q-item__label--caption) {
   color: #3c4043;
   letter-spacing: .01785714em;
   font-size: .875rem;
@@ -245,14 +281,14 @@ export default {
   line-height: 1.25rem;
 }
 
-.GPL__drawer-item--storage {
+.drawer-item--storage {
   border-radius: 0;
   margin-right: 0;
   padding-top: 24px;
   padding-bottom: 24px;
 }
 
-.GPL__side-btn__label {
+.side-btn__label {
   font-size: 12px;
   line-height: 24px;
   letter-spacing: .01785714em;
@@ -260,21 +296,45 @@ export default {
 }
 
 @media (min-width: 1024px) {
-  .GPL__page-container {
+  .page-container {
     padding-left: 94px;
   }
 }
 
-.GPL__timer-container {
+.timer-container {
   display: flex;
   align-items: center;
+  font-family: 'Freeman';
 }
 
-.GPL__timer-display {
+.timer-display {
   margin-left: 16px;
   font-size: 1.25em;
   color: #1976D2;
   font-family: 'Roboto', sans-serif;
 }
 
+.current-task {
+  margin-top: 10px;
+}
+
+.no-task {
+  color: red;
+}
+
+.no-task-chip {
+  border-color: red;
+}
+
+.toolbar-input,
+.timer-container {
+  flex: none;  /* 确保输入框和计时器不伸缩 */
+}
+
+/* 确保顶栏的布局是水平的，各元素整齐排列 */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 </style>
