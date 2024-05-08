@@ -16,8 +16,6 @@
 
 
 <script setup>
-import {defineProps} from 'vue';
-
 // 该组件需要使用 taskWithDetailInfo
 const props = defineProps({
   taskWithDetailInfo: Object
