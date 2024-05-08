@@ -1,10 +1,11 @@
 <template>
-  <router-view />
+  <router-view/>
 </template>
 
 <script setup>
 import {helloRequest} from 'src/api/hello';
 import {useQuasar} from "quasar";
+import reminderInit from "src/reminder/reminder";
 
 defineOptions({
   name: 'App'
@@ -24,4 +25,5 @@ helloRequest()
   .catch(error => {
     console.error(error);
   });
+reminderInit();
 </script>

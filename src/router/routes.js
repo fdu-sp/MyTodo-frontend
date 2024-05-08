@@ -5,8 +5,8 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: '/todo', component: (ToDoList) }
+      {path: '', component: () => import('pages/IndexPage.vue')},
+      {path: '/todo', component: (ToDoList)}
     ]
   },
 
@@ -18,4 +18,10 @@ const routes = [
   }
 ]
 
-export default routes
+function gotoTaskDetailPage(id) {
+  // TODO: 跳转到任务详情页
+  // this.$router.push(`/todo/${id}`);
+}
+
+export default routes;
+export {gotoTaskDetailPage};
