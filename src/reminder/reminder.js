@@ -1,5 +1,5 @@
 import {getRecentReminders} from "src/api/reminder";
-import {getSimpleTaskInfo} from "src/api/task";
+import {getDetailTaskInfo} from "src/api/task";
 import {Notify} from "quasar";
 import {gotoTaskDetailPage} from "src/router/routes";
 
@@ -36,12 +36,13 @@ function addLocalReminder(taskId, reminderTimestamp) {
   const diff = reminderTime - now;
   if (diff > 0) {
     setTimeout(() => {
-      getSimpleTaskInfo(taskId).then(data => {
-        const taskSimpleResp = data.object;
-        console.log(taskSimpleResp);
+      getDetailTaskInfo(taskId).then(data => {
+        const taskDetailResp = data.object;
+        const taskListId = taskDetailResp.taskListId;
+        console.log(taskDetailResp);
         Notify.create({
-          message: taskSimpleResp.title,
-          caption: taskSimpleResp.description,
+          message: taskDetailResp.title,
+          caption: taskDetailResp.taskContentInfo.description,
           timeout: 0,
           color: 'secondary',
           actions: [
@@ -49,7 +50,7 @@ function addLocalReminder(taskId, reminderTimestamp) {
               label: '查看',
               color: 'white',
               handler: () => {
-                gotoTaskDetailPage(taskId);
+                gotoTaskDetailPage(taskListId, taskId);
               }
             }
           ],
