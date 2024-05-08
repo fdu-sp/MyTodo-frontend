@@ -1,7 +1,7 @@
 import {getRecentReminders} from "src/api/reminder";
 import {getDetailTaskInfo} from "src/api/task";
 import {Notify} from "quasar";
-import {gotoTaskDetailPage} from "src/router/routes";
+import {gotoTaskDetailPage} from "src/router/utils";
 
 const RECENT_HOUR = 1;
 
