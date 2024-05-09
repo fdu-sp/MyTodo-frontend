@@ -34,30 +34,36 @@
 
 <script setup>
 import {ref} from 'vue';
+import {getAllTaskGroupsWithSimpleInfo} from "src/api/task-group";
 
 const props = defineProps({
   selectedListId: String,
-  taskGroups: Array
+});
+// 定义可以发射的事件列表
+const emit = defineEmits(['list-selected']);
+
+const taskGroups = ref([]);
+// 响应式数据：未展开的分组ID
+const unExpandedGroups = ref(new Set());
+
+// 获取所有任务分组
+getAllTaskGroupsWithSimpleInfo().then(data => {
+  taskGroups.value = data.object;
+}).catch(err => {
+  console.error('Failed to load task groups:', err);
 });
 
-// 响应式数据：展开的分组ID
-const expandedGroups = ref(new Set());
-
 function toggleGroup(groupId) {
-  if (expandedGroups.value.has(groupId)) {
-    expandedGroups.value.delete(groupId);
+  if (unExpandedGroups.value.has(groupId)) {
+    unExpandedGroups.value.delete(groupId);
   } else {
-    expandedGroups.value.add(groupId);
+    unExpandedGroups.value.add(groupId);
   }
 }
 
 function isGroupExpanded(groupId) {
-  // 取 ! 默认都展开
-  return !expandedGroups.value.has(groupId);
+  return !unExpandedGroups.value.has(groupId);
 }
-
-// 定义可以发射的事件列表
-const emit = defineEmits(['list-selected']);
 
 function selectGroup(groupId) {
   emit('list-selected', groupId);
