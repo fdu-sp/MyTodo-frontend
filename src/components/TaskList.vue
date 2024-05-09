@@ -1,7 +1,7 @@
 <template>
   <q-list bordered class="rounded-borders">
     <q-item v-for="task in tasks" :key="task.id" clickable v-ripple @click="selectTask(task.id)">
-      <task-in-list :task="task"/>
+      <task-in-list :task-id="task.id"/>
     </q-item>
   </q-list>
 </template>
