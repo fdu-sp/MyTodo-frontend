@@ -1,7 +1,7 @@
 import {getRecentReminders} from "src/api/reminder";
 import {getDetailTaskInfo} from "src/api/task";
 import {Notify} from "quasar";
-import {gotoTaskDetailPage} from "src/router/utils";
+import RouterUtils from "src/router/utils";
 
 const RECENT_HOUR = 1;
 
@@ -50,7 +50,7 @@ function addLocalReminder(taskId, reminderTimestamp) {
               label: '查看',
               color: 'white',
               handler: () => {
-                gotoTaskDetailPage(taskListId, taskId);
+                RouterUtils.gotoTaskDetailPage(taskListId, taskId);
               }
             }
           ],
