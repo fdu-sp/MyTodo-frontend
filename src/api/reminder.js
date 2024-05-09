@@ -16,19 +16,5 @@ export function getAllReminders() {
  * @param {number} hour 小时数
  * */
 export function getRecentReminders(hour) {
-  // return api.get(`/reminder/get-recent/${hour}`);
-  return new Promise((resolve, reject) => {
-    const now = new Date();
-    now.setSeconds(now.getSeconds() + 2);
-    resolve({
-      code: 200,
-      message: 'success',
-      object: [
-        {
-          "taskId": 1,
-          "reminderTimestamp": now.toISOString(),
-        },
-      ]
-    });
-  });
+  return api.get(`/reminder/get-recent/${hour}`);
 }
