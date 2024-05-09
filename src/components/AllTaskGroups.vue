@@ -4,16 +4,24 @@
       v-for="group in taskGroups"
       :key="group.id"
       class="group-item">
-      <q-item-section
-        class="group-item-top"
-        clickable
-        @click="toggleGroup(group.id)">
-        <q-item-label class="group-item-name">{{ group.name }} ({{ group.count }} 个清单)</q-item-label>
+      <q-item-section class="group-item-top">
         <q-icon
           name="arrow_drop_down"
           size="lg"
-          class="q-ml-auto arrow-icon"
+          clickable
+          @click="toggleGroup(group.id)"
+          class="arrow-icon"
           :class="{ 'rotated': isGroupExpanded(group.id) }"/>
+        <q-item-label class="group-item-name" clickable @click="toggleGroup(group.id)">
+          {{ group.name }} ({{ group.count }} 个清单)
+        </q-item-label>
+        <q-btn
+          icon="add"
+          flat
+          round
+          dense
+          @click="showAddListDialog(group.id)"
+          class="q-ml-auto"/>
       </q-item-section>
       <div v-if="isGroupExpanded(group.id)" class="list-container">
         <q-item
@@ -27,16 +35,26 @@
             <q-item-label>{{ list.name }} ({{ list.count }} 个任务)</q-item-label>
           </q-item-section>
         </q-item>
-        <q-btn icon="add" flat round dense @click="showAddListDialog(group.id)" class="q-ml-auto"/>
       </div>
     </q-item>
-    <q-btn icon="add" flat round dense @click="showAddGroupDialog" class="q-ml-auto"/>
+    <!-- 新增分组按钮 -->
+    <div class="centered-add-group-btn">
+      <q-btn
+        icon="add"
+        flat
+        round
+        dense
+        @click="showAddGroupDialog"
+      />
+    </div>
 
+    <!-- 创建清单对话框 -->
     <CreateTaskListDialog
       v-model="isAddListDialogVisible"
       :taskGroupId="selectedGroupId"
       @task-list-created="handleTaskListCreated"
     />
+    <!-- 创建分组对话框 -->
     <CreateTaskGroupDialog
       v-model="isAddGroupDialogVisible"
       @task-group-created="handleTaskGroupCreated"
@@ -94,17 +112,11 @@ function showAddGroupDialog() {
 
 // 处理清单创建事件
 function handleTaskListCreated(newTaskList) {
-  // const group = taskGroups.value.find(group => group.id === selectedGroupId.value);
-  // if (group) {
-  //   group.taskLists.push(newTaskList);
-  //   group.count++;
-  // }
   loadAllTaskGroups();
 }
 
 // 处理分组创建事件
 function handleTaskGroupCreated(newTaskGroup) {
-  // taskGroups.value.push(newTaskGroup);
   loadAllTaskGroups();
 }
 
@@ -132,15 +144,18 @@ function loadAllTaskGroups() {
 .group-item-top {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .group-item-name {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .arrow-icon {
   transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
 .rotated {
@@ -155,5 +170,11 @@ function loadAllTaskGroups() {
 
 .list-item {
   margin-top: 5px;
+}
+
+.centered-add-group-btn {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
 }
 </style>
