@@ -27,6 +27,7 @@
     <q-list bordered class="rounded-borders">
       <q-item v-for="task in tasks" :key="task.id" clickable v-ripple @click="selectTask(task.id)">
         <task-in-list
+          style="width: 100%"
           :task-id="task.id"
           @task-updated="handleTaskComplete"
           @task-deleted="handleTaskDelete"
