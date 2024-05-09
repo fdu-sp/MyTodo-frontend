@@ -42,10 +42,11 @@ watch(() => props.taskId, (newTaskId) => {
 
 function loadTaskData(taskId) {
   if (taskId === undefined || taskId === null) {
+    task.value = {};
     return;
   }
   getSimpleTaskInfo(taskId).then(data => {
-    task.value = data.object
+    task.value = data.object || {};
   }).catch(err => {
     console.error('Failed to load task:', err);
   });
