@@ -15,8 +15,7 @@
           <!-- 任务列表区域 -->
           <template v-slot:before>
             <div class="col-12">
-              <!-- 任务列表组件：根据选中的分组显示任务列表 -->
-              <task-list :tasks="tasks" @task-selected="onTaskSelected"/>
+              <task-list :list-id="selectedListId" @task-selected="onTaskSelected"/>
             </div>
           </template>
           <!-- 任务详情区域 -->
@@ -33,60 +32,76 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
 // 导入子组件
 import AllTaskGroups from 'components/AllTaskGroups.vue';
 import TaskList from 'components/TaskList.vue';
 import TaskDetails from 'components/TaskDetails.vue';
 // 导入API调用方法
-import {getAllTasksWithSimpleInfoByListId, getDetailTaskInfo} from 'src/api/task';
-import {useRoute} from "vue-router";
-import {updateTaskDetailPage} from "src/router/utils";
+import {getDetailTaskInfo} from 'src/api/task';
 
-// 响应式数据：所有的任务分组、选中的清单ID、任务列表、选中的任务详情
+// 响应式数据
 const selectedTaskId = ref();
 const selectedListId = ref();
-const tasks = ref([]);
 const selectedTask = ref();
 // 分割器的模型数据，用于控制分割比例
 const splitterModel = ref(30); // 页面被任务分组部分占据的百分比
 const splitterModel2 = ref(50); // 任务列表和任务详情之间的分割比例
 
+// 使用路由钩子
 const route = useRoute();
+const router = useRouter();
+
+// 初始化数据
 selectedListId.value = route.query.listId;
 selectedTaskId.value = route.query.taskId;
-loadTasksByListId(selectedListId.value);
 loadTaskDetails(selectedTaskId.value);
 
-function onListSelected(listId) {
-  updateTaskDetailPage(listId, selectedTaskId.value)
-    .then(() => {
-      loadTasksByListId(listId);
-    });
-}
+// 监听查询参数变化并更新状态
+watch(() => route.query.listId, (newListId) => {
+  selectedListId.value = newListId;
+});
+watch(() => route.query.taskId, (newTaskId) => {
+  selectedTaskId.value = newTaskId;
+  loadTaskDetails(newTaskId);
+});
 
-function onTaskSelected(taskId) {
-  updateTaskDetailPage(selectedListId.value, taskId)
-    .then(() => {
-      loadTaskDetails(taskId);
-    });
-}
+// 监听 `selectedListId` 和 `selectedTaskId` 的变化并更新查询参数
+watch(selectedListId, (newListId) => {
+  updateQueryParams(newListId, selectedTaskId.value);
+});
+watch(selectedTaskId, (newTaskId) => {
+  updateQueryParams(selectedListId.value, newTaskId);
+});
 
-// 根据清单ID加载任务列表
-function loadTasksByListId(listId) {
-  if (listId === undefined || listId === null) {
-    return;
-  }
-  getAllTasksWithSimpleInfoByListId(listId).then(data => {
-    tasks.value = data.object;
+// 更新查询参数
+function updateQueryParams(listId, taskId) {
+  router.replace({
+    path: route.path,
+    query: {...route.query, listId, taskId}
   }).catch(err => {
-    console.error('Failed to load tasks:', err);
+    if (err.name !== "NavigationDuplicated") {
+      console.error(err);
+    }
   });
+}
+
+// 切换选中列表
+function onListSelected(listId) {
+  selectedListId.value = listId;
+  selectedTaskId.value = null;
+}
+
+// 切换选中任务
+function onTaskSelected(taskId) {
+  selectedTaskId.value = taskId;
 }
 
 // 根据任务ID加载任务详情
 function loadTaskDetails(taskId) {
-  if (taskId === undefined || taskId === null) {
+  if (!taskId) {
+    selectedTask.value = null;
     return;
   }
   getDetailTaskInfo(taskId).then(data => {
@@ -96,4 +111,3 @@ function loadTaskDetails(taskId) {
   });
 }
 </script>
-
