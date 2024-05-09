@@ -52,7 +52,8 @@ function toggleGroup(groupId) {
 }
 
 function isGroupExpanded(groupId) {
-  return expandedGroups.value.has(groupId);
+  // 取 ! 默认都展开
+  return !expandedGroups.value.has(groupId);
 }
 
 // 定义可以发射的事件列表

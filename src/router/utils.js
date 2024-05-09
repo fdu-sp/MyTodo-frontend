@@ -2,18 +2,22 @@ import {router} from "src/router/index";
 
 /**
  * @description 跳转到任务详情页
- * @param {number} taskListId 任务列表ID
+ * @param {number} listId 任务列表ID
  * @param {number} taskId 任务ID
  * */
-function gotoTaskDetailPage(taskListId, taskId) {
+function gotoTaskDetailPage(listId, taskId) {
   // taskListId 和 taskId 作为query参数
-  router.push({
+  return router.push({
     path: '/todo',
     query: {
-      taskListId: taskListId,
+      listId: listId,
       taskId: taskId
     }
-  }).then(r => console.log(r));
+  });
 }
 
-export {gotoTaskDetailPage};
+function updateTaskDetailPage(listId, taskId) {
+  return gotoTaskDetailPage(listId, taskId);
+}
+
+export {gotoTaskDetailPage, updateTaskDetailPage};
