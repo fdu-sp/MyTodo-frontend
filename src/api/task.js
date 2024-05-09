@@ -77,8 +77,8 @@ const TaskDetailResp = {
 * */
 // /api/task/detail/get-info/{task-id}
 // 获取指定id的task信息(详细)
-export function getDetailTaskInfo(taskId) {
-  return api.get(`/task/detail/get-info/${taskId}`);
+export function getDetailTaskInfo(taskId, config = {}) {
+  return api.get(`/task/detail/get-info/${taskId}`, config);
 }
 
 // /api/task/simple/get-all-tasks

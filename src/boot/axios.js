@@ -63,21 +63,25 @@ api.interceptors.response.use(
       });
     } else if (code === 500) {
       // 服务器内部错误
-      Notify.create({
-        message: msg,
-        type: 'warning',
-        position: 'top',
-        timeout: 3000,
-      });
+      if (!res.config.silent) {
+        Notify.create({
+          message: msg,
+          type: 'warning',
+          position: 'top',
+          timeout: 3000,
+        });
+      }
       return Promise.reject(new Error(msg));
     } else if (code !== 200) {
       // 请求失败
-      Notify.create({
-        message: msg,
-        type: 'warning',
-        position: 'top',
-        timeout: 3000,
-      });
+      if (!res.config.silent) {
+        Notify.create({
+          message: msg,
+          type: 'warning',
+          position: 'top',
+          timeout: 3000,
+        });
+      }
       return Promise.reject(new Error(msg));
     } else {
       // code = 200 时
@@ -85,12 +89,14 @@ api.interceptors.response.use(
         if (res.data.success) { // 业务成功
           return res.data;
         } else { // 业务失败
-          Notify.create({
-            message: msg,
-            type: 'warning',
-            position: 'top',
-            timeout: 3000,
-          });
+          if (!res.config.silent) {
+            Notify.create({
+              message: msg,
+              type: 'warning',
+              position: 'top',
+              timeout: 3000,
+            });
+          }
           console.error(res);
           return Promise.reject(res);
         }
@@ -108,15 +114,16 @@ api.interceptors.response.use(
     } else if (message.includes("timeout")) {
       message = "请求超时";
     } else if (message.includes("Request failed with status code")) {
-      message = "请求异常：" +
-        message.substr(message.length - 3);
+      message = "请求异常";
     }
-    Notify.create({
-      message: message,
-      type: 'negative',
-      position: 'top',
-      timeout: 3000,
-    });
+    if (!error.config.silent) {
+      Notify.create({
+        message: message,
+        type: 'negative',
+        position: 'top',
+        timeout: 3000,
+      });
+    }
     return Promise.reject(error);
   }
 );
