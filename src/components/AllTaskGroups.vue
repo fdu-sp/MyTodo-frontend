@@ -11,8 +11,12 @@
           clickable
           @click="toggleGroup(group.id)"
           class="arrow-icon"
-          :class="{ 'rotated': isGroupExpanded(group.id) }"/>
-        <q-item-label class="group-item-name" clickable @click="toggleGroup(group.id)">
+          :class="{ 'rotated': isGroupExpanded(group.id) }">
+          <q-tooltip anchor="top middle" self="bottom middle">
+            {{ isGroupExpanded(group.id) ? '收起分组' : '展开分组' }}
+          </q-tooltip>
+        </q-icon>
+        <q-item-label class="group-item-name" clickable>
           {{ group.name }} ({{ group.count }} 个清单)
         </q-item-label>
         <q-btn
@@ -21,7 +25,11 @@
           round
           dense
           @click="showAddListDialog(group.id)"
-          class="q-ml-auto"/>
+          class="q-ml-auto">
+          <q-tooltip anchor="top middle" self="bottom middle">
+            新增清单
+          </q-tooltip>
+        </q-btn>
       </q-item-section>
       <div v-if="isGroupExpanded(group.id)" class="list-container">
         <q-item
@@ -38,14 +46,16 @@
       </div>
     </q-item>
     <!-- 新增分组按钮 -->
-    <div class="centered-add-group-btn">
+    <div class="centered-add-group-btn" @click="showAddGroupDialog" v-ripple>
       <q-btn
         icon="add"
         flat
         round
-        dense
-        @click="showAddGroupDialog"
-      />
+        dense>
+      </q-btn>
+      <q-tooltip anchor="top middle" self="bottom middle">
+        新增分组
+      </q-tooltip>
     </div>
 
     <!-- 创建清单对话框 -->
@@ -176,5 +186,10 @@ function loadAllTaskGroups() {
   display: flex;
   justify-content: center;
   padding: 16px;
+  cursor: pointer;
+}
+
+.centered-add-group-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* 悬浮时的背景色，可根据需要调整 */
 }
 </style>
