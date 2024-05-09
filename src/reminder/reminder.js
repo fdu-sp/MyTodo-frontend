@@ -36,7 +36,7 @@ function addLocalReminder(taskId, reminderTimestamp) {
   const diff = reminderTime - now;
   if (diff > 0) {
     setTimeout(() => {
-      getDetailTaskInfo(taskId).then(data => {
+      getDetailTaskInfo(taskId, {silent: true}).then(data => {
         const taskDetailResp = data.object;
         const taskListId = taskDetailResp.taskListId;
         // console.log(taskDetailResp);
@@ -57,7 +57,7 @@ function addLocalReminder(taskId, reminderTimestamp) {
           position: 'top-right',
         });
       }).catch(err => {
-        console.error(err);
+        console.error("Error in local reminder: ", err);
       });
     }, diff);
   }
