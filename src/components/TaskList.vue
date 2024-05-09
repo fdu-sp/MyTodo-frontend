@@ -9,6 +9,20 @@
       </q-item>
     </q-list>
 
+    <!-- 新增任务输入框 -->
+    <q-list bordered class="rounded-borders task-input">
+      <q-item>
+        <q-item-section>
+          <q-input
+            filled
+            v-model="newTaskTitle"
+            placeholder="添加任务..."
+            @keyup.enter="addTask"
+          />
+        </q-item-section>
+      </q-item>
+    </q-list>
+
     <!-- 任务列表 -->
     <q-list bordered class="rounded-borders">
       <q-item v-for="task in tasks" :key="task.id" clickable v-ripple @click="selectTask(task.id)">
@@ -27,6 +41,7 @@
 import {ref, watch} from "vue";
 import TaskInList from "components/TaskInList.vue";
 import {getTaskListDetailInfo} from "src/api/task-list";
+import {createNewTask} from "src/api/task";
 
 const props = defineProps({
   listId: {
@@ -38,6 +53,7 @@ const props = defineProps({
 const emit = defineEmits(['task-selected']);
 const listName = ref('');
 const tasks = ref([]);
+const newTaskTitle = ref('');
 
 // 初次加载任务列表
 loadTaskListData(props.listId);
@@ -81,6 +97,22 @@ function tasksSort() {
     // 按标题排序
     return a.title.localeCompare(b.title);
   });
+}
+
+function addTask() {
+  createNewTask({
+    title: newTaskTitle.value,
+    tagNames: [], // 任务标签, 必填, List<String>, 可以为空列表
+    description: "", // 任务描述, 必填, String, 可以为空字符串
+    taskListId: props.listId,
+  })
+    .then(() => {
+      newTaskTitle.value = '';
+      loadTaskListData(props.listId);
+    })
+    .catch((err) => {
+      console.error('Failed to create new task:', err);
+    });
 }
 
 // 处理任务更新事件
