@@ -1,44 +1,63 @@
 <template>
-  <q-list bordered class="rounded-borders">
-    <q-item v-for="task in tasks" :key="task.id" clickable v-ripple @click="selectTask(task.id)">
-      <task-in-list
-        :task-id="task.id"
-        @task-updated="handleTaskComplete"
-        @task-deleted="handleTaskDelete"
-      />
-    </q-item>
-  </q-list>
+  <div>
+    <!-- 清单名称显示部分 -->
+    <q-list bordered class="rounded-borders list-header">
+      <q-item>
+        <q-item-section>
+          <q-item-label class="text-h6">{{ listName }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+
+    <!-- 任务列表 -->
+    <q-list bordered class="rounded-borders">
+      <q-item v-for="task in tasks" :key="task.id" clickable v-ripple @click="selectTask(task.id)">
+        <task-in-list
+          :task-id="task.id"
+          @task-updated="handleTaskComplete"
+          @task-deleted="handleTaskDelete"
+        />
+      </q-item>
+    </q-list>
+  </div>
 </template>
+
 
 <script setup>
 import {ref, watch} from "vue";
 import TaskInList from "components/TaskInList.vue";
-import {getAllTasksWithSimpleInfoByListId} from "src/api/task";
+import {getTaskListDetailInfo} from "src/api/task-list";
 
 const props = defineProps({
-  listId: Number,
+  listId: {
+    type: Number,
+    required: true
+  },
 });
 
 const emit = defineEmits(['task-selected']);
+const listName = ref('');
 const tasks = ref([]);
 
 // 初次加载任务列表
-loadTasksByListId(props.listId);
+loadTaskListData(props.listId);
 
 // 监听 listId 变化并重新加载任务列表
 watch(() => props.listId, (newListId) => {
-  loadTasksByListId(newListId);
+  loadTaskListData(newListId);
 });
 
 // 根据清单ID加载任务列表
-function loadTasksByListId(listId) {
+function loadTaskListData(listId) {
   if (listId === undefined || listId === null) {
     tasks.value = [];
     return;
   }
-  getAllTasksWithSimpleInfoByListId(listId)
+  getTaskListDetailInfo(listId)
     .then((data) => {
-      tasks.value = data.object || [];
+      const taskListDetailResponse = data.object || {};
+      listName.value = taskListDetailResponse.name || '';
+      tasks.value = taskListDetailResponse.tasks || [];
       tasksSort();
     })
     .catch((err) => {
@@ -88,3 +107,6 @@ function selectTask(taskId) {
   emit('task-selected', taskId);
 }
 </script>
+
+<style scoped>
+</style>
