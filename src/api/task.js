@@ -108,7 +108,7 @@ export function unCompleteTask(taskId) {
 // /api/task/delete/{task-id}
 // 删除指定id的task
 export function deleteTask(taskId) {
-  return api.delete(`/task/delete/${taskId}`);
+  return api.post(`/task/delete/${taskId}`);
 }
 
 // /api/task/simple/get-all-tasks-by-list/{list-id}
