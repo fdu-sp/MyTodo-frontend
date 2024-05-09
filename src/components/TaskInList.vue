@@ -1,25 +1,22 @@
 <template>
-  <q-item>
+  <q-item :class="{ 'task-completed': task.completed }">
     <q-item-section avatar>
-      <!-- 任务勾选框 -->
       <q-checkbox v-model="task.completed" @update:model-value="toggleCompleted" color="green"/>
     </q-item-section>
     <q-item-section>
-      <q-item-label>
+      <q-item-label :class="{ 'caption-completed': task.completed }">
         {{ task.title }}
-        <!-- 显示星号图标标识重要任务 -->
         <q-icon name="star" v-if="task.isImportant" class="text-warning q-ml-sm"/>
       </q-item-label>
-      <q-item-label caption>{{ task.description }}</q-item-label>
-      <!-- 显示任务截止日期 -->
+      <q-item-label caption :class="{ 'caption-completed': task.completed }">{{ task.description }}</q-item-label>
       <q-item-label caption class="text-grey-8">{{ task.dueDate }}</q-item-label>
     </q-item-section>
     <q-item-section side>
-      <!-- 删除任务按钮 -->
       <q-btn icon="delete" flat round dense color="negative" @click="handleDelete"/>
     </q-item-section>
   </q-item>
 </template>
+
 
 <script setup>
 import {ref, watch} from "vue";
@@ -76,5 +73,11 @@ function handleDelete() {
 </script>
 
 <style scoped>
+.task-completed {
+  color: #757575; /* 设置字体颜色为灰色 */
+}
 
+.caption-completed {
+  text-decoration: line-through; /* 添加删除线 */
+}
 </style>
