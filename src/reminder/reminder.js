@@ -39,7 +39,7 @@ function addLocalReminder(taskId, reminderTimestamp) {
       getDetailTaskInfo(taskId).then(data => {
         const taskDetailResp = data.object;
         const taskListId = taskDetailResp.taskListId;
-        console.log(taskDetailResp);
+        // console.log(taskDetailResp);
         Notify.create({
           message: taskDetailResp.title,
           caption: taskDetailResp.taskContentInfo.description,
