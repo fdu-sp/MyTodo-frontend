@@ -157,7 +157,7 @@ function readRoutingInformation() {
     console.log("当前任务ID：", currentTask.value.taskId);
 
     getSimpleTaskInfo(currentTask.value.taskId).then(data => {
-      if(timerId.value == null) { // 如果当前没有计时器
+      if (timerId.value == null) { // 如果当前没有计时器
         currentTask.value.taskName = data.object.title;
         //!BUG: nextTick().then(() => {
         //   shakeTimer(); // 确保在DOM更新完毕后执行动画
@@ -165,6 +165,10 @@ function readRoutingInformation() {
       }
 
     });
+    // 如果当前正在计时但是没有选择任务
+    if (timerId.value == null && timerRunning.value) {
+      stopTimer();
+    }
   } else {
     currentTask.value.taskId = null;
     currentTask.value.listId = null;
@@ -202,9 +206,9 @@ const formattedTime = computed(() => {
 function checkForTimedTasksAtStartup() {
   getTheTaskCurrentlyBeingTimed().then(data => {
     if (!data.object) {
-      console.log("没有正在运行的任务！");
+      console.log("没有正在计时的任务！");
     } else {
-      console.log("当前正在运行的任务是：", data.object);
+      console.log("当前正在计时的任务是：", data.object);
       currentTask.value = data.object;
     }
   });
@@ -227,7 +231,7 @@ function startTimer() {
   timerInterval = setInterval(() => { // 每秒更新时间
     currentTime.value = Date.now();
   }, 1000);
-  if(currentTask.value.taskId != null){ // 如果当前有任务
+  if (currentTask.value.taskId != null) { // 如果当前有任务
     createNewTimer(currentTask.value.taskId).then(data => {
       console.log("创建新计时器：", data);
       timerId.value = data.object.id;
@@ -244,11 +248,11 @@ function stopTimer() {
   setTimeout(() => {
     currentTime.value = startTime.value;
   }, 500);
-  updateTimer(timerId.value).then(data => {
-    console.log("更新计时器：", data);
-    console.log(data.msg)
-  });
-  if(timerId.value != null){
+  if (timerId.value != null) {
+    updateTimer(timerId.value).then(data => {
+      console.log("更新计时器：", data);
+      console.log(data.msg)
+    });
     timerId.value = null; //重新设置为null
   }
 }
