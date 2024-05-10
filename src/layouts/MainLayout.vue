@@ -117,7 +117,7 @@
 
 <script setup>
 import {ref, computed, onUnmounted, watch, nextTick, onMounted} from 'vue'
-import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
+import {createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer} from "src/api/timer";
 import {useRoute, useRouter} from "vue-router";
 import {getSimpleTaskInfo} from "src/api/task";
 
@@ -142,7 +142,7 @@ const shakeTimer = () => {
       timerDisplay.classList.add('animated-shake')
       setTimeout(() => {
         timerDisplay.classList.remove('animated-shake')
-      }, 3000) // 与动画持续时间匹配
+      }, 10000) // 与动画持续时间匹配
     }
   })
 }
@@ -157,13 +157,15 @@ function readRoutingInformation() {
     console.log("当前任务ID：", currentTask.value.taskId);
 
     getSimpleTaskInfo(currentTask.value.taskId).then(data => {
-      currentTask.value.taskName = data.object.title;
-      nextTick().then(() => {
-        shakeTimer(); // 确保在DOM更新完毕后执行动画
-      });
+      if(timerId.value == null) { // 如果当前没有计时器
+        currentTask.value.taskName = data.object.title;
+        //!BUG: nextTick().then(() => {
+        //   shakeTimer(); // 确保在DOM更新完毕后执行动画
+        // });
+      }
+
     });
   } else {
-    console.log("Router检测：当前没有进入任何任务！");
     currentTask.value.taskId = null;
     currentTask.value.listId = null;
     currentTask.value.taskName = '未选择任务';
@@ -181,24 +183,13 @@ function toggleLeftDrawer() {
 
 // 任务相关
 
-// watch: 监听任务ID的变化
-watch(currentTask.value.taskId, (newVal) => {
-  if (newVal) {
-    currentTask.value.taskName = getTaskName(newVal);
-  } else {
-    currentTask.value.taskName = '未选择任务';
-  }
-});
-
-function getTaskName(taskId) {
-  return '新建文件夹'; // 根据任务ID获取任务名称的逻辑
-}
-
 // 计时器相关
 const timerRunning = ref(false);
 const startTime = ref(0);
 const currentTime = ref(0);
 let timerInterval = null;
+
+const timerId = ref(null); //当前正在计时的任务
 
 const formattedTime = computed(() => {
   const totalSeconds = Math.floor((currentTime.value - startTime.value) / 1000);
@@ -221,9 +212,9 @@ function checkForTimedTasksAtStartup() {
 
 // 开始/停止计时器
 function toggleTimer() {
-  if (timerRunning.value) {
+  if (timerRunning.value) { // 停止计时
     stopTimer();
-  } else {
+  } else { // 开始计时
     if (!timerInterval) {
       currentTime.value = startTime.value = Date.now();
     }
@@ -233,9 +224,17 @@ function toggleTimer() {
 
 function startTimer() {
   timerRunning.value = true;
-  timerInterval = setInterval(() => {
+  timerInterval = setInterval(() => { // 每秒更新时间
     currentTime.value = Date.now();
   }, 1000);
+  if(currentTask.value.taskId != null){ // 如果当前有任务
+    createNewTimer(currentTask.value.taskId).then(data => {
+      console.log("创建新计时器：", data);
+      timerId.value = data.object.id;
+      console.log("当前计时器ID：", timerId.value);
+    });
+  }
+
 }
 
 function stopTimer() {
@@ -245,6 +244,13 @@ function stopTimer() {
   setTimeout(() => {
     currentTime.value = startTime.value;
   }, 500);
+  updateTimer(timerId.value).then(data => {
+    console.log("更新计时器：", data);
+    console.log(data.msg)
+  });
+  if(timerId.value != null){
+    timerId.value = null; //重新设置为null
+  }
 }
 
 //数据
