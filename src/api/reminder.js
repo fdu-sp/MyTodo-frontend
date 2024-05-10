@@ -23,10 +23,10 @@ export function getRecentReminders(hour) {
     const now = new Date();
     const two_seconds_later = new Date(now);
     const three_seconds_later = new Date(now);
-    const four_seconds_later = new Date(now);
+    const later = new Date(now);
     two_seconds_later.setSeconds(now.getSeconds() + 2);
     three_seconds_later.setSeconds(now.getSeconds() + 3);
-    four_seconds_later.setSeconds(now.getSeconds() + 4);
+    later.setSeconds(now.getSeconds() + 10);
     resolve({
       code: 200,
       message: 'success',
@@ -44,12 +44,8 @@ export function getRecentReminders(hour) {
           reminderTimestamp: three_seconds_later.toISOString(),
         },
         {
-          taskId: 4,
-          reminderTimestamp: three_seconds_later.toISOString(),
-        },
-        {
           taskId: 5,
-          reminderTimestamp: four_seconds_later.toISOString(),
+          reminderTimestamp: later.toISOString(),
         },
       ]
     });
