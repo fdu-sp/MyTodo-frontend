@@ -78,9 +78,6 @@ import CreateTaskListDialog from "components/CreateTaskListDialog.vue";
 import CreateTaskGroupDialog from "components/CreateTaskGroupDialog.vue";
 import {getAllTaskGroupsWithSimpleInfo} from "src/api/task-group";
 
-const props = defineProps({
-  selectedListId: String,
-});
 const emit = defineEmits(['list-selected']);
 
 const taskGroups = ref([]);
