@@ -37,7 +37,7 @@
         <!--            </q-list>-->
         <!--          </q-menu>-->
         <!--        </q-btn>-->
-        <div class="timer-container animated-shake">
+        <div ref="timerContainer" class="timer-container animated-shake">
           <q-btn
             flat
             dense
@@ -116,7 +116,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onUnmounted, watch} from 'vue'
+import {ref, computed, onUnmounted, watch, nextTick, onMounted} from 'vue'
 import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
 import {useRoute, useRouter} from "vue-router";
 import {getSimpleTaskInfo} from "src/api/task";
@@ -133,23 +133,36 @@ const currentTask = ref({
   taskName: '未选择任务'
 });
 
+const timerContainerRef = ref(null)
+// 摇动计时器
+const shakeTimer = () => {
+  nextTick(() => {
+    const timerDisplay = timerContainerRef.value.querySelector('.timer-display')
+    if (timerDisplay) {
+      timerDisplay.classList.add('animated-shake')
+      setTimeout(() => {
+        timerDisplay.classList.remove('animated-shake')
+      }, 3000) // 与动画持续时间匹配
+    }
+  })
+}
+
 //* 加载页面时的运行函数
 checkForTimedTasksAtStartup();
-
-readRoutingInformation();
 
 function readRoutingInformation() {
   if (route.query.taskId) {
     currentTask.value.taskId = route.query.taskId;
     currentTask.value.listId = route.query.listId;
     console.log("当前任务ID：", currentTask.value.taskId);
+
     getSimpleTaskInfo(currentTask.value.taskId).then(data => {
       currentTask.value.taskName = data.object.title;
+      nextTick().then(() => {
+        shakeTimer(); // 确保在DOM更新完毕后执行动画
+      });
     });
-    // // TODO: 抖动当前计时器
-    // let timerDisplay = document.querySelector('.timer-display');
-    // shakeElement(timerDisplay);
-  } else {// 如果当前没有进入某个特定任务
+  } else {
     console.log("Router检测：当前没有进入任何任务！");
     currentTask.value.taskId = null;
     currentTask.value.listId = null;
@@ -234,13 +247,6 @@ function stopTimer() {
   }, 500);
 }
 
-// onUnmounted: 组件销毁时清除计时器
-onUnmounted(() => {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-});
-
 //数据
 const links1 = [
   {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
@@ -266,15 +272,15 @@ const links3 = [
 //   { icon: 'people', text: 'New Todo' },
 // ],
 
-function shakeElement(element) {
-  // 添加抖动的CSS类
-  element.classList.add('animated-shake');
-
-  // 在一段时间后移除抖动的CSS类，以停止抖动
-  setTimeout(() => {
-    element.classList.remove('animated-shake');
-  }, 1000); // 这里的1000是抖动的持续时间，单位为毫秒
-}
+onMounted(() => {
+  shakeTimer(); // Ensure it's called after everything is mounted
+});
+// onUnmounted: 组件销毁时清除计时器
+onUnmounted(() => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
 
 </script>
 
@@ -387,11 +393,21 @@ function shakeElement(element) {
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 </style>
