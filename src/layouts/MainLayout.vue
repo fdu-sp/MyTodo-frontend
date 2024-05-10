@@ -133,7 +133,23 @@ const currentTask = ref({
   taskName: '未选择任务'
 });
 
+// 计时器相关
+const timerRunning = ref(false);
+const startTime = ref(0);
+const currentTime = ref(0);
+let timerInterval = null;
+const timerId = ref(null); //当前正在计时的任务
 const timerContainerRef = ref(null)
+const search = ref('')
+
+const formattedTime = computed(() => {
+  const totalSeconds = Math.floor((currentTime.value - startTime.value) / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+});
+
 // 摇动计时器
 const shakeTimer = () => {
   nextTick(() => {
@@ -146,9 +162,6 @@ const shakeTimer = () => {
     }
   })
 }
-
-//* 加载页面时的运行函数
-checkForTimedTasksAtStartup();
 
 function readRoutingInformation() {
   if (route.query.taskId) {
@@ -176,32 +189,6 @@ function readRoutingInformation() {
   }
 }
 
-// 页面相关
-const leftDrawerOpen = ref(false)
-const search = ref('')
-const storage = ref(0.2) // 需要绑定数据
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
-
-// 任务相关
-
-// 计时器相关
-const timerRunning = ref(false);
-const startTime = ref(0);
-const currentTime = ref(0);
-let timerInterval = null;
-
-const timerId = ref(null); //当前正在计时的任务
-
-const formattedTime = computed(() => {
-  const totalSeconds = Math.floor((currentTime.value - startTime.value) / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-});
 
 function checkForTimedTasksAtStartup() {
   getTheTaskCurrentlyBeingTimed().then(data => {
@@ -257,6 +244,18 @@ function stopTimer() {
   }
 }
 
+onMounted(() => {
+  //* 加载页面时的运行函数
+  checkForTimedTasksAtStartup();
+  shakeTimer(); // Ensure it's called after everything is mounted
+});
+// onUnmounted: 组件销毁时清除计时器
+onUnmounted(() => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+
 //数据
 const links1 = [
   {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
@@ -281,16 +280,6 @@ const links3 = [
 //   { icon: 'photo_album', text: 'Today Todo' },
 //   { icon: 'people', text: 'New Todo' },
 // ],
-
-onMounted(() => {
-  shakeTimer(); // Ensure it's called after everything is mounted
-});
-// onUnmounted: 组件销毁时清除计时器
-onUnmounted(() => {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-});
 
 </script>
 
