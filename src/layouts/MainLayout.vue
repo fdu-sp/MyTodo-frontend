@@ -3,39 +3,40 @@
     <q-header elevated class="bg-white text-grey-8" height-hint="64">
       <q-toolbar class="toolbar" style="height: 64px">
         <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
-<!--          <img src="https://cdn.quasar.dev/img/layout-gallery/logo-google.svg">-->
+          <!--          <img src="https://cdn.quasar.dev/img/layout-gallery/logo-google.svg">-->
           <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>
         </q-toolbar-title>
 
-        <q-space />
+        <q-space/>
 
-<!--        TODO:全局搜索功能   -->
+        <!--        TODO:全局搜索功能   -->
         <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">
           <template v-slot:prepend>
-            <q-icon v-if="search === ''" name="search" />
-            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''" />
+            <q-icon v-if="search === ''" name="search"/>
+            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>
           </template>
         </q-input>
 
-        <div class="current-task" :class="{ 'no-task': !selectedTaskId }">
+        <div class="current-task" :class="{ 'no-task': !currentTask.taskId }">
           <q-chip
             outline
             color="primary"
             text-color="white"
             icon="event"
-            :class="{ 'no-task-chip': !selectedTaskId }"
+            :class="{ 'no-task-chip': !currentTask.taskId }"
           >
-            当前任务:{{ currentTaskName }}
+            当前任务：
+            <div class="current-task-name">{{ currentTask.taskName }}</div>
           </q-chip>
         </div>
 
-<!--   NOTES: 顶层导航中的下拉菜单     -->
-<!--        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="start_circle" no-caps label="Start Timer" class="q-ml-sm q-px-md">-->
-<!--          <q-menu anchor="top end" self="top end">-->
-<!--            <q-list class="text-grey-8" style="min-width: 100px">-->
-<!--            </q-list>-->
-<!--          </q-menu>-->
-<!--        </q-btn>-->
+        <!--   NOTES: 顶层导航中的下拉菜单     -->
+        <!--        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="start_circle" no-caps label="Start Timer" class="q-ml-sm q-px-md">-->
+        <!--          <q-menu anchor="top end" self="top end">-->
+        <!--            <q-list class="text-grey-8" style="min-width: 100px">-->
+        <!--            </q-list>-->
+        <!--          </q-menu>-->
+        <!--        </q-btn>-->
         <div class="timer-container">
           <q-btn
             flat
@@ -54,14 +55,14 @@
           </div>
         </div>
 
-        <q-space />
+        <q-space/>
 
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn round dense flat color="grey-8" icon="notifications">
             <q-badge color="red" text-color="white" floating>
               2
             </q-badge>
-<!--  TODO: ↑数字2待绑定          -->
+            <!--  TODO: ↑数字2待绑定          -->
             <q-tooltip>Notifications</q-tooltip>
           </q-btn>
           <q-btn round flat>
@@ -75,24 +76,24 @@
     </q-header>
 
     <q-page-container class="page-container">
-      <router-view /> <!--  NOTES:  这里是路由的位置  -->
+      <router-view/> <!--  NOTES:  这里是路由的位置  -->
 
-<!--       NOTES: 侧边栏（非折叠）-->
+      <!--       NOTES: 侧边栏（非折叠）-->
       <q-page-sticky v-if="$q.screen.gt.sm" expand position="left">
         <div class="fit q-pt-xl q-px-sm column">
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/dashboard">
-            <q-icon size="22px" name="photo" />
+            <q-icon size="22px" name="photo"/>
             <div class="side-btn__label">Dashboard</div>
           </q-btn>
 
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/todo">
-            <q-icon size="22px" name="collections_bookmark" />
+            <q-icon size="22px" name="collections_bookmark"/>
             <div class="side-btn__label">TodoList</div>
           </q-btn>
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/today">
-            <q-icon size="22px" name="assistant" />
+            <q-icon size="22px" name="assistant"/>
             <div class="side-btn__label">Today</div>
             <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">
               1
@@ -100,12 +101,12 @@
           </q-btn>
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/matrix">
-            <q-icon size="22px" name="group" />
+            <q-icon size="22px" name="group"/>
             <div class="side-btn__label">Matrix</div>
           </q-btn>
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/statistic">
-            <q-icon size="22px" name="import_contacts" />
+            <q-icon size="22px" name="import_contacts"/>
             <div class="side-btn__label">Statistic</div>
           </q-btn>
         </div>
@@ -115,31 +116,62 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted, watch } from 'vue'
-import { getTheTaskCurrentlyBeingTimed } from "src/api/timer";
+import {ref, computed, onUnmounted, watch} from 'vue'
+import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
+import {useRoute, useRouter} from "vue-router";
+import {getSimpleTaskInfo} from "src/api/task";
 
-// 运行函数
+//固定量（优先级高）
+const route = useRoute(); // 返回当前路由的信息对象
+const router = useRouter(); // 返回一个路由实例
+router.afterEach(() => {
+  readRoutingInformation();
+});
+const currentTask = ref({
+  taskId: null,
+  listId: null,
+  taskName: '未选择任务'
+});
+
+//* 加载页面时的运行函数
 checkForTimedTasksAtStartup();
+
+
+readRoutingInformation();
+
+function readRoutingInformation() {
+  if (route.query.taskId) {
+    currentTask.value.taskId = route.query.taskId;
+    currentTask.value.listId = route.query.listId;
+    console.log("当前任务ID：", currentTask.value.taskId);
+    getSimpleTaskInfo(currentTask.value.taskId).then(data => {
+      currentTask.value.taskName = data.object.title;
+    });
+  } else {// 如果当前没有进入某个特定任务
+    console.log("Router检测：当前没有进入任何任务！");
+    currentTask.value.taskId = null;
+    currentTask.value.listId = null;
+    currentTask.value.taskName = '未选择任务';
+  }
+}
 
 // 页面相关
 const leftDrawerOpen = ref(false)
 const search = ref('')
-const storage = ref(0.2) // TODO:需要绑定数据
+const storage = ref(0.2) // 需要绑定数据
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
 // 任务相关
-const currentTask = ref();
-const selectedTaskId = ref(null);
-const currentTaskName = ref('未选择任务');
 
-watch(selectedTaskId, (newVal) => {
+// watch: 监听任务ID的变化
+watch(currentTask.value.taskId, (newVal) => {
   if (newVal) {
-    currentTaskName.value = getTaskName(newVal);
+    currentTask.value.taskName = getTaskName(newVal);
   } else {
-    currentTaskName.value = '未选择任务';
+    currentTask.value.taskName = '未选择任务';
   }
 });
 
@@ -172,6 +204,7 @@ function checkForTimedTasksAtStartup() {
   });
 }
 
+// 开始/停止计时器
 function toggleTimer() {
   if (timerRunning.value) {
     stopTimer();
@@ -199,6 +232,7 @@ function stopTimer() {
   }, 500);
 }
 
+// onUnmounted: 组件销毁时清除计时器
 onUnmounted(() => {
   if (timerInterval) {
     clearInterval(timerInterval);
@@ -206,23 +240,23 @@ onUnmounted(() => {
 });
 
 const links1 = [
-  { icon: 'photo', text: 'Dashboard', url: '/dashboard' },
-  { icon: 'assistant', text: 'Today', url: '/today' },
-  { icon: 'photo_album', text: 'TodoList', url: '/todo' },
-  { icon: '', text: 'Group', url: '/group' },
-  { icon: 'people', text: 'Matrix', url: '/matrix' },
-  { icon: 'book', text: 'Statistic', url: '/statistic' }
+  {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
+  {icon: 'assistant', text: 'Today', url: '/today'},
+  {icon: 'photo_album', text: 'TodoList', url: '/todo'},
+  {icon: '', text: 'Group', url: '/group'},
+  {icon: 'people', text: 'Matrix', url: '/matrix'},
+  {icon: 'book', text: 'Statistic', url: '/statistic'}
 ];
 
 const links2 = [
-  { icon: 'archive', text: 'Archive', url: '/archive' },
-  { icon: 'delete', text: 'Trash', url: '/trash' }
+  {icon: 'archive', text: 'Archive', url: '/archive'},
+  {icon: 'delete', text: 'Trash', url: '/trash'}
 ];
 
 const links3 = [
-  { icon: 'settings', text: 'Settings' },
-  { icon: 'help', text: 'Help & Feedback' },
-  { icon: 'get_app', text: 'App Downloads' }
+  {icon: 'settings', text: 'Settings'},
+  {icon: 'help', text: 'Help & Feedback'},
+  {icon: 'get_app', text: 'App Downloads'}
 ];
 // const createMenu: [
 //   { icon: 'photo_album', text: 'Today Todo' },
@@ -311,7 +345,7 @@ const links3 = [
 
 .toolbar-input,
 .timer-container {
-  flex: none;  /* 确保输入框和计时器不伸缩 */
+  flex: none; /* 确保输入框和计时器不伸缩 */
 }
 
 /* 确保顶栏的布局是水平的，各元素整齐排列 */
@@ -319,5 +353,10 @@ const links3 = [
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.current-task-name {
+  font-weight: bold;
+
 }
 </style>
