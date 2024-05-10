@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="listId">
     <!-- 清单名称显示部分 -->
     <q-list bordered class="rounded-borders list-header">
       <q-item>
