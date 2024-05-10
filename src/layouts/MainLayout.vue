@@ -9,7 +9,7 @@
 
         <q-space />
 
-<!--        TODO：全局搜索功能   -->
+<!--        TODO:全局搜索功能   -->
         <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">
           <template v-slot:prepend>
             <q-icon v-if="search === ''" name="search" />
@@ -25,11 +25,11 @@
             icon="event"
             :class="{ 'no-task-chip': !selectedTaskId }"
           >
-            当前任务：{{ currentTaskName }}
+            当前任务:{{ currentTaskName }}
           </q-chip>
         </div>
 
-<!--   NOTES: 顶层导航中的菜单     -->
+<!--   NOTES: 顶层导航中的下拉菜单     -->
 <!--        <q-btn v-if="$q.screen.gt.xs" flat dense no-wrap color="primary" icon="start_circle" no-caps label="Start Timer" class="q-ml-sm q-px-md">-->
 <!--          <q-menu anchor="top end" self="top end">-->
 <!--            <q-list class="text-grey-8" style="min-width: 100px">-->
@@ -114,137 +114,120 @@
   </q-layout>
 </template>
 
-<script>
+<script setup>
 import { ref, computed, onUnmounted, watch } from 'vue'
+import { getTheTaskCurrentlyBeingTimed } from "src/api/timer";
 
-export default {
-  name: 'GooglePhotosLayout',
+// 运行函数
+checkForTimedTasksAtStartup();
 
-  setup () {
-    const leftDrawerOpen = ref(false)
-    const search = ref('')
-    const storage = ref(0.2) // TODO：需要绑定数据
+// 页面相关
+const leftDrawerOpen = ref(false)
+const search = ref('')
+const storage = ref(0.2) // TODO:需要绑定数据
 
-    function toggleLeftDrawer () {
-      leftDrawerOpen.value = !leftDrawerOpen.value
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+// 任务相关
+const currentTask = ref();
+const selectedTaskId = ref(null);
+const currentTaskName = ref('未选择任务');
+
+watch(selectedTaskId, (newVal) => {
+  if (newVal) {
+    currentTaskName.value = getTaskName(newVal);
+  } else {
+    currentTaskName.value = '未选择任务';
+  }
+});
+
+function getTaskName(taskId) {
+  return '新建文件夹'; // 根据任务ID获取任务名称的逻辑
+}
+
+// 计时器相关
+const timerRunning = ref(false);
+const startTime = ref(0);
+const currentTime = ref(0);
+let timerInterval = null;
+
+const formattedTime = computed(() => {
+  const totalSeconds = Math.floor((currentTime.value - startTime.value) / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+});
+
+function checkForTimedTasksAtStartup() {
+  getTheTaskCurrentlyBeingTimed().then(data => {
+    if (!data.object) {
+      console.log("没有正在运行的任务！");
+    } else {
+      console.log("当前正在运行的任务是：", data.object);
+      currentTask.value = data.object;
     }
+  });
+}
 
-    // NOTES：任务相关
-    // 响应式数据：当前选中的任务ID
-    const selectedTaskId = ref(null);
-
-    // 根据选中的任务ID获取任务名称
-    const currentTaskName = ref('未选择任务');
-
-    // 监听选中的任务ID变化，更新当前任务名称
-    watch(selectedTaskId, (newVal) => {
-      if (newVal) {
-        // 根据选中的任务ID获取任务名称，这里假设有个函数根据任务ID获取任务名称
-        currentTaskName.value = getTaskName(newVal);
-      } else {
-        currentTaskName.value = '未选择任务';
-      }
-    });
-
-    // 假设有个函数根据任务ID获取任务名称的逻辑
-    function getTaskName(taskId) {
-      // 这里假设有个函数根据任务ID获取任务名称的逻辑
-      // 你需要根据实际情况实现这个函数
-      return '新建文件夹';
+function toggleTimer() {
+  if (timerRunning.value) {
+    stopTimer();
+  } else {
+    if (!timerInterval) {
+      currentTime.value = startTime.value = Date.now();
     }
-
-    // NOTES：计时器相关
-    const timerRunning = ref(false);
-    const startTime = ref(0);
-    const currentTime = ref(0);
-    let timerInterval = null;
-
-    // 计算格式化后的时间
-    const formattedTime = computed(() => {
-      const totalSeconds = Math.floor((currentTime.value - startTime.value) / 1000);
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    });
-
-    function toggleTimer() {
-      if (timerRunning.value) {
-        stopTimer();
-      } else {
-        if (!timerInterval) { // Ensure timer starts from 00:00:00
-          currentTime.value = startTime.value = Date.now();
-        }
-        startTimer();
-      }
-    }
-
-
-    function startTimer() {
-      timerRunning.value = true;
-      timerInterval = setInterval(() => {
-        currentTime.value = Date.now();
-      }, 1000);
-      // TODO: 添加函数发送当前时间到后端
-    }
-
-    function stopTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null; // Clear interval ID when stopped
-      timerRunning.value = false;
-      // 设置一个 0.5 秒的延时来重置时间
-      setTimeout(() => {
-        currentTime.value = startTime.value; // 重置时间为初始状态
-      }, 500);
-      // TODO: 添加函数发送当前时间到后端
-    }
-
-    // 组件销毁时清除计时器
-    onUnmounted(() => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
-    });
-
-
-    return {
-      leftDrawerOpen,
-      search,
-      storage,
-      timerRunning,
-      formattedTime,
-      toggleTimer,
-
-      links1: [
-        // TODO: 设置每个页面的路由
-        { icon: 'photo', text: 'Dashboard', url: '/dashboard' },
-        { icon: 'assistant', text: 'Today', url: '/today' },
-        { icon: 'photo_album', text: 'TodoList', url: '/todo' },
-        { icon: '', text: 'Group', url: '/group' },
-        { icon: 'people', text: 'Matrix', url: '/matrix' },
-        { icon: 'book', text: 'Statistic', url: '/statistic' }
-      ],
-      links2: [
-        { icon: 'archive', text: 'Archive', url: '/archive'},
-        { icon: 'delete', text: 'Trash', url: '/trash' }
-      ],
-      // TODO: 下面这个link3暂时不设置URL和page
-      links3: [
-        { icon: 'settings', text: 'Settings' },
-        { icon: 'help', text: 'Help & Feedback' },
-        { icon: 'get_app', text: 'App Downloads' }
-      ],
-      // createMenu: [
-      //   { icon: 'photo_album', text: 'Today Todo' },
-      //   { icon: 'people', text: 'New Todo' },
-      // ],
-
-      toggleLeftDrawer
-    }
-
-
+    startTimer();
   }
 }
+
+function startTimer() {
+  timerRunning.value = true;
+  timerInterval = setInterval(() => {
+    currentTime.value = Date.now();
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning.value = false;
+  setTimeout(() => {
+    currentTime.value = startTime.value;
+  }, 500);
+}
+
+onUnmounted(() => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+
+const links1 = [
+  { icon: 'photo', text: 'Dashboard', url: '/dashboard' },
+  { icon: 'assistant', text: 'Today', url: '/today' },
+  { icon: 'photo_album', text: 'TodoList', url: '/todo' },
+  { icon: '', text: 'Group', url: '/group' },
+  { icon: 'people', text: 'Matrix', url: '/matrix' },
+  { icon: 'book', text: 'Statistic', url: '/statistic' }
+];
+
+const links2 = [
+  { icon: 'archive', text: 'Archive', url: '/archive' },
+  { icon: 'delete', text: 'Trash', url: '/trash' }
+];
+
+const links3 = [
+  { icon: 'settings', text: 'Settings' },
+  { icon: 'help', text: 'Help & Feedback' },
+  { icon: 'get_app', text: 'App Downloads' }
+];
+// const createMenu: [
+//   { icon: 'photo_album', text: 'Today Todo' },
+//   { icon: 'people', text: 'New Todo' },
+// ],
 </script>
 
 <style>

@@ -11,6 +11,7 @@ const api = axios.create({
 })
 
 // request拦截器
+// 如果没有设置silent属性，则显示错误提示
 api.interceptors.request.use(
   config => {
     LoadingBar.start();
