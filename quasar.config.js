@@ -98,7 +98,7 @@ module.exports = configure(function (ctx) {
         loadingBar: {
           position: 'bottom',
           color: 'primary',
-        },
+        },   
         notify: { /* 参考 API 卡片中的 QuasarConfOptions  */}
       },
 

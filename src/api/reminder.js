@@ -44,12 +44,8 @@ export function getRecentReminders(hour) {
           reminderTimestamp: three_seconds_later.toISOString(),
         },
         {
-          taskId: 4,
-          reminderTimestamp: three_seconds_later.toISOString(),
-        },
-        {
           taskId: 5,
-          reminderTimestamp: four_seconds_later.toISOString(),
+          reminderTimestamp: later.toISOString(),
         },
       ]
     });
