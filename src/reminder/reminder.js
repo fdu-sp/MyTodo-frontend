@@ -24,6 +24,31 @@ function reminderInit() {
   })
 }
 
+function formatTaskDetails(taskDetailResp) {
+  const title = taskDetailResp.title || "No Title";
+  const description = taskDetailResp.taskContentInfo?.description || "无描述";
+  const endDate = taskDetailResp.taskTimeInfo?.endDate || "";
+  const endTime = taskDetailResp.taskTimeInfo?.endTime || "";
+  const endStr = endDate + " " + endTime;
+  const showEnd = endDate && endDate !== "" && endTime && endTime !== "";
+  const endHtml = showEnd ? `<span>截止：${endStr}</span>` : "";
+  const isImportant = taskDetailResp.taskPriorityInfo?.isImportant || false;
+  const importantHtml = isImportant ? `<q-icon name="star" class="text-warning q-ml-sm"/>` : "";
+  return {
+    message: `
+    <div class="q-mb-sm">
+      <span>${title}</span>
+      ${importantHtml}
+    </div>
+   `,
+    caption: `
+      <span>${description}</span>
+      <br/>
+      ${endHtml}
+    `,
+  };
+}
+
 // TODO 如果用户新增了一个提醒，需要调用该函数
 /**
  * @description 添加本地提醒
@@ -39,18 +64,27 @@ function addLocalReminder(taskId, reminderTimestamp) {
       getDetailTaskInfo(taskId, {silent: true}).then(data => {
         const taskDetailResp = data.object;
         const taskListId = taskDetailResp.taskListId;
-        // console.log(taskDetailResp);
+        const formatHtml = formatTaskDetails(taskDetailResp);
         Notify.create({
-          message: taskDetailResp.title,
-          caption: taskDetailResp.taskContentInfo.description,
+          html: true,
+          message: formatHtml.message,
+          caption: formatHtml.caption,
           timeout: 0,
           color: 'secondary',
           actions: [
             {
               label: '查看',
-              color: 'white',
+              color: 'yellow',
               handler: () => {
                 RouterUtils.gotoTaskDetailPage(taskListId, taskId);
+              }
+            },
+            {
+              label: '忽略',
+              color: 'white',
+              handler: () => {
+                console.log(`Reminder ignored for taskId: ${taskId}`);
+                // TODO: 后端记录忽略了提醒（silent）
               }
             }
           ],

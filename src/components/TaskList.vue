@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="listId">
     <!-- 清单名称显示部分 -->
     <q-list bordered class="rounded-borders list-header">
       <q-item>
@@ -43,6 +43,7 @@ import {ref, watch} from "vue";
 import TaskInList from "components/TaskInList.vue";
 import {getTaskListDetailInfo} from "src/api/task-list";
 import {createNewTask} from "src/api/task";
+import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
 
 const props = defineProps({
   listId: {
@@ -127,6 +128,15 @@ function handleTaskComplete(updatedTask) {
     return task;
   });
   tasksSort();
+  getTheTaskCurrentlyBeingTimed().then(data => {
+    if (!data.object) {
+      console.log("没有正在计时的任务！");
+    } else {
+      console.log("当前正在计时的任务是：", data.object);
+      // currentTask.value = data.object;
+      // TODO: 在这个页面怎么更新计时器视图
+    }
+  });
 }
 
 // 处理任务删除事件

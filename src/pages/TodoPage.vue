@@ -6,7 +6,7 @@
       <template v-slot:before>
         <div class="col">
           <!-- 任务分组组件：显示所有分组，并允许用户选择具体的清单 -->
-          <all-task-groups :selectedListId @list-selected="onListSelected"/>
+          <all-task-groups @list-selected="onListSelected"/>
         </div>
       </template>
       <!-- 分割器的右侧部分（或下部），进一步使用了另一个分割器来分割任务列表和任务详情 -->
@@ -54,16 +54,16 @@ const route = useRoute();
 const router = useRouter();
 
 // 初始化数据
-selectedListId.value = route.query.listId;
-selectedTaskId.value = route.query.taskId;
+selectedListId.value = route.query.listId ? Number(route.query.listId) : null;
+selectedTaskId.value = route.query.taskId ? Number(route.query.taskId) : null;
 loadTaskDetails(selectedTaskId.value);
 
 // 监听查询参数变化并更新状态
 watch(() => route.query.listId, (newListId) => {
-  selectedListId.value = newListId;
+  selectedListId.value = newListId ? Number(newListId) : null;
 });
 watch(() => route.query.taskId, (newTaskId) => {
-  selectedTaskId.value = newTaskId;
+  selectedTaskId.value = newTaskId ? Number(newTaskId) : null;
   loadTaskDetails(newTaskId);
 });
 
@@ -89,13 +89,13 @@ function updateQueryParams(listId, taskId) {
 
 // 切换选中列表
 function onListSelected(listId) {
-  selectedListId.value = listId;
+  selectedListId.value = listId ? Number(listId) : null;
   selectedTaskId.value = null;
 }
 
 // 切换选中任务
 function onTaskSelected(taskId) {
-  selectedTaskId.value = taskId;
+  selectedTaskId.value = taskId ? Number(taskId) : null;
 }
 
 // 根据任务ID加载任务详情
