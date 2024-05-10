@@ -9,7 +9,7 @@
 
         <q-space/>
 
-        <!--        TODO:全局搜索功能   -->
+        <!--        全局搜索功能   -->
         <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">
           <template v-slot:prepend>
             <q-icon v-if="search === ''" name="search"/>
@@ -37,7 +37,7 @@
         <!--            </q-list>-->
         <!--          </q-menu>-->
         <!--        </q-btn>-->
-        <div class="timer-container">
+        <div class="timer-container animated-shake">
           <q-btn
             flat
             dense
@@ -136,7 +136,6 @@ const currentTask = ref({
 //* 加载页面时的运行函数
 checkForTimedTasksAtStartup();
 
-
 readRoutingInformation();
 
 function readRoutingInformation() {
@@ -147,6 +146,9 @@ function readRoutingInformation() {
     getSimpleTaskInfo(currentTask.value.taskId).then(data => {
       currentTask.value.taskName = data.object.title;
     });
+    // // TODO: 抖动当前计时器
+    // let timerDisplay = document.querySelector('.timer-display');
+    // shakeElement(timerDisplay);
   } else {// 如果当前没有进入某个特定任务
     console.log("Router检测：当前没有进入任何任务！");
     currentTask.value.taskId = null;
@@ -239,6 +241,7 @@ onUnmounted(() => {
   }
 });
 
+//数据
 const links1 = [
   {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
   {icon: 'assistant', text: 'Today', url: '/today'},
@@ -262,6 +265,17 @@ const links3 = [
 //   { icon: 'photo_album', text: 'Today Todo' },
 //   { icon: 'people', text: 'New Todo' },
 // ],
+
+function shakeElement(element) {
+  // 添加抖动的CSS类
+  element.classList.add('animated-shake');
+
+  // 在一段时间后移除抖动的CSS类，以停止抖动
+  setTimeout(() => {
+    element.classList.remove('animated-shake');
+  }, 1000); // 这里的1000是抖动的持续时间，单位为毫秒
+}
+
 </script>
 
 <style>
@@ -324,6 +338,20 @@ const links3 = [
   font-family: 'Freeman';
 }
 
+/* 确保顶栏的布局是水平的，各元素整齐排列 */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 确保输入框、任务和计时器容器在水平方向上对齐 */
+.toolbar-input, .current-task, .timer-container {
+  display: flex;
+  align-items: center;
+  margin-right: 16px; /* 可以根据需要调整间距 */
+}
+
 .timer-display {
   margin-left: 16px;
   font-size: 1.25em;
@@ -332,7 +360,7 @@ const links3 = [
 }
 
 .current-task {
-  margin-top: 10px;
+  margin-top: 0; /* 移除上边距，使其与其他组件对齐 */
 }
 
 .no-task {
@@ -348,15 +376,22 @@ const links3 = [
   flex: none; /* 确保输入框和计时器不伸缩 */
 }
 
-/* 确保顶栏的布局是水平的，各元素整齐排列 */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .current-task-name {
   font-weight: bold;
-
 }
+
+.animated-shake {
+  animation-name: shake;
+  animation-duration: 0.5s; /* 动画持续时间 */
+  animation-timing-function: ease-in-out; /* 缓动函数 */
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
 </style>
