@@ -46,7 +46,7 @@
       </div>
     </q-item>
     <!-- 新增分组按钮 -->
-    <div class="centered-add-group-btn" @click="showAddGroupDialog" v-ripple>
+    <div class="centered-add-group-btn" @click="showAddGroupDialog">
       <q-btn
         icon="add"
         flat
