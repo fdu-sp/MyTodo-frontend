@@ -104,6 +104,7 @@ function tasksSort() {
 function addTask() {
   createNewTask({
     title: newTaskTitle.value,
+    completed: false, // 任务是否完成, 必填, Boolean
     tagNames: [], // 任务标签, 必填, List<String>, 可以为空列表
     description: "", // 任务描述, 必填, String, 可以为空字符串
     taskListId: props.listId,
