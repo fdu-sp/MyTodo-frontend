@@ -1,6 +1,8 @@
 import {route} from 'quasar/wrappers'
 import {createMemoryHistory, createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 import routes from './routes'
+import apiEmitter, {API_EVENTS} from "src/event/ApiEventEmitter";
+import {Notify} from "quasar";
 
 /*
  * If not building with SSR mode, you can
@@ -29,6 +31,17 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   return router;
+});
+
+// 监听 未授权事件
+apiEmitter.on(API_EVENTS.UN_AUTH, (msg) => {
+  Notify.create({
+    message: '您需要登录以访问这个页面。',
+    type: 'warning',
+    position: 'top',
+    timeout: 3000,
+    actions: [{label: '前往登录', color: 'white', handler: () => router.push('/login')}]
+  });
 });
 
 export {router};
