@@ -47,7 +47,7 @@ import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
 
 const props = defineProps({
   listId: {
-    type: Number,
+    type: [Number, null, undefined],
     required: true
   },
 });
