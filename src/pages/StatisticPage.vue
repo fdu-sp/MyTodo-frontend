@@ -8,6 +8,27 @@
       <q-separator />
       <q-card-section>
         <div class="row q-col-gutter-md">
+          <!-- 任务数量统计 -->
+          <div class="col-12 q-pa-md stats-container">
+            <q-card class="q-ma-md">
+              <q-card-section>
+                <div class="text-subtitle1">总任务数</div>
+                <div class="text-h6">30</div>
+              </q-card-section>
+            </q-card>
+            <q-card class="q-ma-md">
+              <q-card-section>
+                <div class="text-subtitle1">已完成任务数</div>
+                <div class="text-h6">10</div>
+              </q-card-section>
+            </q-card>
+            <q-card class="q-ma-md">
+              <q-card-section>
+                <div class="text-subtitle1">未完成任务数</div>
+                <div class="text-h6">20</div>
+              </q-card-section>
+            </q-card>
+          </div>
           <!-- 饼图区域 -->
           <div class="col-12 col-md-6">
             <div class="chart-container q-pa-md">
@@ -41,7 +62,7 @@ onMounted(() => {
   let pieChart = echarts.init(document.getElementById('pieChart'));
   let pieOption = {
     title: {
-      text: '任务完成情况',
+      text: '今日任务完成情况',
       left: 'center'
     },
     tooltip: {
@@ -141,6 +162,15 @@ onMounted(() => {
 }
 
 .chart-container {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+.stats-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.2);
