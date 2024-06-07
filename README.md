@@ -1,41 +1,49 @@
 # MyTodo (mytodo-frontend)
 
-A MyTodo Web Application
+MyTOdo wed端
 
-## Install the dependencies
+## 运行指南
+
 ```bash
-yarn
+# 安装依赖
+yarn install
 # or
 npm install
-```
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
+# 使用 开发模式 启动项（支持热更新、错误报告等）
 quasar dev
 ```
 
-
-### Lint the files
 ```bash
+# Lint the files with ESLint
 yarn lint
 # or
 npm run lint
 ```
 
-
-### Format the files
 ```bash
+# Format the files
 yarn format
 # or
 npm run format
 ```
 
+## docker部署
 
-
-### Build the app for production
 ```bash
+# 构建生产环境版本，生成 dist 文件夹
 quasar build
+# 构建 docker 镜像
+docker build -t mytodo-frontend:1.0.0 .
 ```
 
-### Customize the configuration
+本地运行
+
+```bash
+docker run -d --name mytodo-frontend -p 8081:80 mytodo-frontend:1.0.0
+```
+
+访问：http://localhost:8081
+
+## Customize the configuration
+
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).

@@ -72,7 +72,7 @@ module.exports = configure(function (ctx) {
       // ignorePublicFolder: true,
       // minify: false,
       // polyfillModulePreload: true,
-      // distDir
+      distDir: 'dist',
 
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
@@ -98,7 +98,7 @@ module.exports = configure(function (ctx) {
         loadingBar: {
           position: 'bottom',
           color: 'primary',
-        },   
+        },
         notify: { /* 参考 API 卡片中的 QuasarConfOptions  */}
       },
 
