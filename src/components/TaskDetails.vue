@@ -2,10 +2,10 @@
   <div v-if="taskWithDetailInfo" class="task-details">
     <!-- 任务标题编辑 -->
     <q-input filled v-model="editableTitle" label="任务标题" />
-    
+
     <!-- 任务描述编辑 -->
     <q-input filled v-model="editableDescription" label="任务描述" />
-    
+
     <!-- 任务截止日期编辑 -->
     <!-- <q-input filled v-model="editableEndDate" mask="####-##-##" label="截止日期" /> -->
 
@@ -107,10 +107,15 @@ watch(() => props.taskWithDetailInfo, (newVal) => {
   }
 }, { immediate: true });
 
+function loadPages() {
+  // 重新加载页面，不影响用户体验
+  location.reload();
+}
+
 // 定义保存任务的函数
 const saveTask = async () => {
   try {
-    
+
     console.log(editableRemindTimeStamp.value);
     // 调用 API 发送更新任务的请求
     await updateTask({
@@ -129,7 +134,7 @@ const saveTask = async () => {
         updateTime: new Date().toISOString().replace('T', ' ').slice(0, 19)
       },
       taskPriorityInfo: props.taskWithDetailInfo.taskPriorityInfo,
-      taskTimeInfo: 
+      taskTimeInfo:
       // props.taskWithDetailInfo.taskTimeInfo,
       {
         endDate: editableEndDate.value ,
@@ -138,8 +143,8 @@ const saveTask = async () => {
         activateCountdown: props.taskWithDetailInfo.taskTimeInfo.activateCountdown,
         expectedExecutionDate: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionDate,
         expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
-        expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod      
-      } 
+        expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
+      }
 
     });
 
@@ -149,7 +154,7 @@ const saveTask = async () => {
       message: '更新成功!',
       color: 'positive',
       icon: 'check_circle',
-      
+
     });
   } catch (error) {
     // 错误处理逻辑
@@ -160,6 +165,8 @@ const saveTask = async () => {
       icon: 'report_problem',
     });
   }
+
+  loadPages();
 };
 
 // ...（省略其他代码）
