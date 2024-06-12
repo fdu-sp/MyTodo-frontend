@@ -95,10 +95,9 @@
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/today">
             <q-icon size="22px" name="assistant"/>
             <div class="side-btn__label">Today</div>
-<!--            TODO: 考虑一下未完成任务和这里的显示数量绑定-->
-<!--            <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">-->
-<!--              1-->
-<!--            </q-badge>-->
+            <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">
+              {{todayTaskNum}}
+            </q-badge>
           </q-btn>
 
 <!--          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/matrix">-->
@@ -121,6 +120,9 @@ import {ref, computed, onUnmounted, watch, nextTick, onMounted} from 'vue'
 import {createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer} from "src/api/timer";
 import {useRoute, useRouter} from "vue-router";
 import {getSimpleTaskInfo} from "src/api/task";
+import {getMyDayTasksWithSimpleInfo} from "src/api/my-day";
+
+const todayTaskNum = ref(0); // 今日任务数量
 
 //固定量（优先级高）
 const route = useRoute(); // 返回当前路由的信息对象
@@ -245,10 +247,18 @@ function stopTimer() {
   }
 }
 
+function calTodayTaskNum() {
+  // 获取今日任务数量
+  getMyDayTasksWithSimpleInfo().then(data => {
+    todayTaskNum.value = data.object.length;
+  });
+}
+
 onMounted(() => {
   //* 加载页面时的运行函数
   checkForTimedTasksAtStartup();
   shakeTimer(); // Ensure it's called after everything is mounted
+  calTodayTaskNum();
 });
 // onUnmounted: 组件销毁时清除计时器
 onUnmounted(() => {
