@@ -40,6 +40,7 @@ jobs:
             echo "TAG_VERSION=$TAG" >> $GITHUB_ENV
           else
             echo "IS_VERSION_TAG=false" >> $GITHUB_ENV
+          fi
 
       - name: Log in to Docker Hub
         if: env.IS_VERSION_TAG == 'true'
