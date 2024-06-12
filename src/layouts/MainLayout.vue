@@ -81,10 +81,10 @@
       <!--       NOTES: 侧边栏（非折叠）-->
       <q-page-sticky v-if="$q.screen.gt.sm" expand position="left">
         <div class="fit q-pt-xl q-px-sm column">
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/dashboard">
-            <q-icon size="22px" name="photo"/>
-            <div class="side-btn__label">Dashboard</div>
-          </q-btn>
+<!--          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/dashboard">-->
+<!--            <q-icon size="22px" name="photo"/>-->
+<!--            <div class="side-btn__label">Dashboard</div>-->
+<!--          </q-btn>-->
 
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/todo">
@@ -95,15 +95,16 @@
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/today">
             <q-icon size="22px" name="assistant"/>
             <div class="side-btn__label">Today</div>
-            <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">
-              1
-            </q-badge>
+<!--            TODO: 考虑一下未完成任务和这里的显示数量绑定-->
+<!--            <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">-->
+<!--              1-->
+<!--            </q-badge>-->
           </q-btn>
 
-          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/matrix">
-            <q-icon size="22px" name="group"/>
-            <div class="side-btn__label">Matrix</div>
-          </q-btn>
+<!--          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/matrix">-->
+<!--            <q-icon size="22px" name="group"/>-->
+<!--            <div class="side-btn__label">Matrix</div>-->
+<!--          </q-btn>-->
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/statistic">
             <q-icon size="22px" name="import_contacts"/>
@@ -258,11 +259,11 @@ onUnmounted(() => {
 
 //数据
 const links1 = [
-  {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
+  // {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
   {icon: 'assistant', text: 'Today', url: '/today'},
   {icon: 'photo_album', text: 'TodoList', url: '/todo'},
   {icon: '', text: 'Group', url: '/group'},
-  {icon: 'people', text: 'Matrix', url: '/matrix'},
+  // {icon: 'people', text: 'Matrix', url: '/matrix'},
   {icon: 'book', text: 'Statistic', url: '/statistic'}
 ];
 
