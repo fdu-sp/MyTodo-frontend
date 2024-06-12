@@ -1,6 +1,6 @@
 # MyTodo (mytodo-frontend)
 
-MyTOdo wed端
+MyTodo wed端
 
 ## 运行指南
 
@@ -29,10 +29,17 @@ npm run format
 
 ## docker部署
 
+修改 `quasar.config.js` 文件中的 `BASE_URL`。
+
+构建生产环境版本，生成 dist 文件夹
+
 ```bash
-# 构建生产环境版本，生成 dist 文件夹
 quasar build
-# 构建 docker 镜像
+```
+
+构建 docker 镜像
+
+```shell
 docker build -t mytodo-frontend:1.0.0 .
 ```
 
