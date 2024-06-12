@@ -17,7 +17,7 @@
           </q-tooltip>
         </q-icon>
         <q-item-label class="group-item-name" clickable>
-          {{ group.name }} <!-- 展示分组名称 -->
+          {{ group.name }} <!-- TODO：name靠左对齐，现在是居中 -->
         </q-item-label>
       </q-item-section>
       <div v-if="isGroupExpanded(group.id)" class="list-container">
@@ -55,7 +55,7 @@ const taskGroups = ref([
       {
         id: -1, // 为了防止和已有清单的id混淆
         name: "(●'◡'●)今日任务",
-        count: 3,
+        count: 0,
       }
     ],
   },
@@ -108,8 +108,7 @@ function selectGroup(groupId) {
 function loadAllTodayTasks() {
   getMyDayTasksWithSimpleInfo()
     .then((data) => {
-      tasks.value = data.object || [];
-      console.log('Loaded all tasks:', data.object);
+      taskGroups.value[0].taskLists[0].count = data.object.length; // 获取任务数量
     })
     .catch((err) => {
       console.error('Failed to load all tasks:', err);
@@ -119,8 +118,10 @@ function loadAllTodayTasks() {
 function loadAllRecommendTasks() {
   getRecommendOfMyDay()
     .then((data) => {
-      tasks.value = data.object || [];
-      console.log('Loaded all tasks:', data.object);
+      // 获取任务长度
+      taskGroups.value[1].taskLists[0].count = data.object.tasksEndInThreeDays.taskSimpleRespList.length;
+      taskGroups.value[1].taskLists[1].count = data.object.tasksEndInFourToSevenDays.taskSimpleRespList.length;
+      taskGroups.value[1].taskLists[2].count = data.object.uncompletedTasksEndBeforeToday.taskSimpleRespList.length;
     })
     .catch((err) => {
       console.error('Failed to load all tasks:', err);
