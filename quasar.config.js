@@ -66,7 +66,8 @@ module.exports = configure(function (ctx) {
         }
         : {
           // todo: change this to the actual production URL
-          BASE_URL: 'http://localhost:8787/api'
+          BASE_URL: 'http://localhost:8787/api',
+          VUE_ROUTER_MODE: this.vueRouterMode,
         },
       // rawDefine: {}
       // ignorePublicFolder: true,

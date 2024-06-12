@@ -1,8 +1,8 @@
 # MyTodo (mytodo-frontend)
 
-MyTOdo wed端
+MyTodo wed端
 
-## 运行指南
+# 运行指南
 
 ```bash
 # 安装依赖
@@ -27,12 +27,19 @@ yarn format
 npm run format
 ```
 
-## docker部署
+# docker部署
+
+修改 `quasar.config.js` 文件中的 `BASE_URL`。
+
+构建生产环境版本，生成 dist 文件夹
 
 ```bash
-# 构建生产环境版本，生成 dist 文件夹
 quasar build
-# 构建 docker 镜像
+```
+
+构建 docker 镜像
+
+```shell
 docker build -t mytodo-frontend:1.0.0 .
 ```
 
@@ -47,3 +54,23 @@ docker run -d --name mytodo-frontend -p 8081:80 mytodo-frontend:1.0.0
 ## Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+
+# CI/CD
+
+采用主干开发，主干发布的方式
+
+先设置 GitHub Secrets ，请按照以下步骤操作：
+
+1. 打开 GitHub 仓库。
+2. 转到 Settings（设置）。
+3. 在左侧菜单中选择 Secrets and variables -> Actions。
+4. 点击 New repository secret。
+5. 添加以下变量：
+
+- DOCKER_USERNAME: 你的 Docker Hub 用户名。
+- DOCKER_PASSWORD: 你的 Docker Hub 密码。
+- BASE_URL: 后端的url，例如 http://localhost:8787/api
+
+main分支上，提交时给提交打上vx.x.x的tag，推送到github后，action会被触发，完成镜像构建和镜像推送。
+
+会推送两个镜像，一个带有tag x.x.x，一个带有tag latest。
