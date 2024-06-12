@@ -13,7 +13,7 @@
           class="arrow-icon"
           :class="{ 'rotated': isGroupExpanded(group.id) }">
           <q-tooltip anchor="top middle" self="bottom middle">
-            {{ isGroupExpanded(group.id) ? '收起分组' : '展开分组' }}
+            {{ isGroupExpanded(group.id) ? '收起' : '展开' }}
           </q-tooltip>
         </q-icon>
         <q-item-label class="group-item-name" clickable>
@@ -25,7 +25,7 @@
           v-for="list in group.taskLists"
           :key="list.id"
           clickable
-          @click="selectGroup(list.id)"
+          @click="selectTodayGroup(list.id)"
           v-ripple
           class="list-item">
           <q-item-section>
@@ -39,12 +39,9 @@
 
 <script setup>
 import {ref} from 'vue';
-import CreateTaskListDialog from "components/CreateTaskListDialog.vue";
-import CreateTaskGroupDialog from "components/CreateTaskGroupDialog.vue";
-import {getAllTaskGroupsWithSimpleInfo} from "src/api/task-group";
 import {getMyDayTasksWithSimpleInfo, getRecommendOfMyDay} from "src/api/my-day";
 
-const emit = defineEmits(['list-selected']);
+const emit = defineEmits(['today-list-selected']);
 
 // 事先写好的“分组”
 const taskGroups = ref([
@@ -55,7 +52,7 @@ const taskGroups = ref([
       {
         id: -1, // 为了防止和已有清单的id混淆
         name: "(●'◡'●)今日任务",
-        count: 0,
+        count: 1,
       }
     ],
   },
@@ -64,17 +61,17 @@ const taskGroups = ref([
     name: '🌟今日推荐',
     taskLists: [
       {
-        id: -1,
+        id: -2,
         name: "🔚即将到来",
         count: 1,
       },
       {
-        id: -2,
+        id: -3,
         name: "🌍更远的未来",
         count: 1,
       },
       {
-        id: -3,
+        id: -4,
         name: "❗️已过期",
         count: 1,
       }
@@ -100,8 +97,8 @@ function isGroupExpanded(groupId) {
   return !unExpandedGroups.value.has(groupId);
 }
 
-function selectGroup(groupId) {
-  emit('list-selected', groupId);
+function selectTodayGroup(groupId) {
+  emit('today-list-selected', groupId);
 }
 
 // 获取我的一天的任务
@@ -150,6 +147,8 @@ function loadAllRecommendTasks() {
   display: flex;
   align-items: center;
   cursor: pointer;
+  font-size: 25px;
+  font-family: 华文琥珀;
 }
 
 .arrow-icon {

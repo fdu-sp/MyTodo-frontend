@@ -158,6 +158,8 @@ function loadAllTaskGroups() {
   display: flex;
   align-items: center;
   cursor: pointer;
+  font-size: 25px;
+  font-family: 华文琥珀;
 }
 
 .arrow-icon {
