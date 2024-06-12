@@ -10,20 +10,6 @@
       </q-item>
     </q-list>
 
-    <!-- 新增任务输入框 -->
-    <q-list bordered class="rounded-borders task-input">
-      <q-item>
-        <q-item-section>
-          <q-input
-            filled
-            v-model="newTaskTitle"
-            placeholder="添加任务..."
-            @keyup.enter="addTask"
-          />
-        </q-item-section>
-      </q-item>
-    </q-list>
-
     <!-- 任务列表 -->
     <q-list bordered class="rounded-borders">
       <q-item v-for="task in tasks" :key="task.id" clickable v-ripple @click="selectTask(task.id)">
@@ -45,6 +31,7 @@ import TaskInList from "components/TaskInList.vue";
 import {getTaskListDetailInfo} from "src/api/task-list";
 import {createNewTask} from "src/api/task";
 import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
+import {getMyDayTasksWithSimpleInfo, getRecommendOfMyDay} from "src/api/my-day";
 
 const props = defineProps({
   listId: {
@@ -74,14 +61,26 @@ function loadTodayTaskListData(listId) {
   }
   if(listId === -1) {
     listName.value = "(●'◡'●)今日任务";
+    getMyDayTasksWithSimpleInfo().then(data => {
+      tasks.value = data.object;
+    })
   } else if(listId === -2) {
     listName.value = "🔚即将到来";
+    getRecommendOfMyDay().then(data => {
+      tasks.value = data.object.tasksEndInThreeDays.taskSimpleRespList;
+    })
   }
   else if(listId === -3) {
     listName.value = "🌍更远的未来";
+    getRecommendOfMyDay().then(data => {
+      tasks.value = data.object.tasksEndInFourToSevenDays.taskSimpleRespList;
+    })
   }
   else if(listId === -4) {
     listName.value = "❗️已过期";
+    getRecommendOfMyDay().then(data => {
+      tasks.value = data.object.uncompletedTasksEndBeforeToday.taskSimpleRespList;
+    })
   }
   else { // 如果是普通清单
     getTaskListDetailInfo(listId)
