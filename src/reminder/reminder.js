@@ -52,7 +52,6 @@ function formatTaskDetails(taskDetailResp) {
 
 const addedTaskIds = new Set();
 
-// TODO 如果用户新增了一个提醒，需要调用该函数
 /**
  * @description 添加本地提醒；每一个任务ID只会被添加一遍
  * @param {number} taskId 任务ID
