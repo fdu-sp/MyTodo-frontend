@@ -49,17 +49,24 @@ function formatTaskDetails(taskDetailResp) {
   };
 }
 
+const addedTaskIds = new Set();
+
 // TODO 如果用户新增了一个提醒，需要调用该函数
 /**
- * @description 添加本地提醒
+ * @description 添加本地提醒；每一个任务ID只会被添加一遍
  * @param {number} taskId 任务ID
  * @param {string} reminderTimestamp 提醒时间戳
  * */
 function addLocalReminder(taskId, reminderTimestamp) {
+  if (addedTaskIds.has(taskId)) {
+    console.log(`TaskId: ${taskId} has already been added.`);
+    return;
+  }
   const reminderTime = new Date(reminderTimestamp);
   const now = new Date();
   const diff = reminderTime - now;
   if (diff > 0) {
+    addedTaskIds.add(taskId);
     setTimeout(() => {
       getDetailTaskInfo(taskId, {silent: true}).then(data => {
         const taskDetailResp = data.object;
@@ -77,6 +84,7 @@ function addLocalReminder(taskId, reminderTimestamp) {
               color: 'yellow',
               handler: () => {
                 RouterUtils.gotoTaskDetailPage(taskListId, taskId);
+                addedTaskIds.delete(taskId); // 移除任务ID
               }
             },
             {
@@ -84,6 +92,7 @@ function addLocalReminder(taskId, reminderTimestamp) {
               color: 'white',
               handler: () => {
                 console.log(`Reminder ignored for taskId: ${taskId}`);
+                addedTaskIds.delete(taskId); // 移除任务ID
                 // TODO: 后端记录忽略了提醒（silent）
               }
             }
@@ -92,8 +101,10 @@ function addLocalReminder(taskId, reminderTimestamp) {
         });
       }).catch(err => {
         console.error("Error in local reminder: ", err);
-      });
+        addedTaskIds.delete(taskId); // 移除任务ID
+      })
     }, diff);
+    console.log(`TaskId: ${taskId} is added to reminder.`);
   }
 }
 
