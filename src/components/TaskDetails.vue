@@ -70,7 +70,8 @@
     <!-- 完成情况 -->
     <div>
       <!--      <q-toggle v-model="editableCompleted" label="已完成"/>-->
-      <q-btn icon="save" label="保存" @click="saveTask"/>
+      <q-btn icon="save" label="保存" @click="saveTask" style="margin-right: 15px;"/>
+      <q-btn icon="add" color="secondary" glossy label="添加到“我的一天”" @click="saveTodayTask"/>
     </div>
   </div>
   <div v-else class="no-task">
@@ -83,8 +84,10 @@
 <script setup>
 import {ref, watch} from 'vue';
 import {updateTask} from 'src/api/task'; // 导入 updateTask 方法
-import {useQuasar} from 'quasar';
+import {Notify, useQuasar} from 'quasar';
 import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
+import {addTaskToMyDay} from "src/api/my-day";
+import {useRoute, useRouter} from "vue-router";
 
 // 使用 useQuasar 插件
 const $q = useQuasar();
@@ -168,6 +171,48 @@ function saveTask() {
         color: 'negative',
         icon: 'report_problem',
       });
+    });
+}
+
+const router = useRouter();
+const route = useRoute();
+
+// 保存到“我的一天”
+function saveTodayTask() {
+  let taskId = props.taskWithDetailInfo.id;
+
+  // 假设 addTaskToMyDay 是一个返回 Promise 的异步函数
+  addTaskToMyDay(taskId)
+    .then(() => {
+      // 保存完成后进行路由跳转或刷新页面
+      if (route.path.startsWith('/today')) {
+        router.push('/today')
+          .then(() => {
+            // 跳转成功后刷新页面
+            Notify.create({
+              message: "成功保存",
+              type: 'positive',
+              position: 'top',
+              timeout: 3000,
+            });
+            loadPages();
+          })
+          .catch((err) => {
+            console.error('路由跳转失败:', err);
+          });
+      } else if (route.path.startsWith('/todo')) {
+        // 只刷新页面
+        Notify.create({
+          message: "成功保存",
+          type: 'positive',
+          position: 'top',
+          timeout: 3000,
+        });
+        loadPages();
+      }
+    })
+    .catch((err) => {
+      console.error('保存任务失败:', err);
     });
 }
 </script>

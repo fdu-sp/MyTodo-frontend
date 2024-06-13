@@ -32,6 +32,8 @@ import {getTaskListDetailInfo} from "src/api/task-list";
 import {createNewTask} from "src/api/task";
 import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
 import {getMyDayTasksWithSimpleInfo, getRecommendOfMyDay} from "src/api/my-day";
+import {useRoute, useRouter} from "vue-router";
+import {Notify} from "quasar";
 
 const props = defineProps({
   listId: {
@@ -44,6 +46,9 @@ const emit = defineEmits(['task-selected']);
 const listName = ref('');
 const tasks = ref([]);
 const newTaskTitle = ref('');
+
+const router = useRouter();
+const route = useRoute();
 
 // 初次加载任务列表
 loadTodayTaskListData(props.listId);
@@ -156,6 +161,32 @@ function handleTaskComplete(updatedTask) {
 function handleTaskDelete(taskId) {
   tasks.value = tasks.value.filter((task) => task.id !== taskId);
   tasksSort();
+  reloadPage();
+}
+
+// 更新路由+刷新页面
+function reloadPage() {
+  // 获取当前查询参数
+  const query = { ...route.query };
+
+  // 删除特定的查询参数值
+  if (query.taskId) {
+    delete query.taskId;
+  }
+  Notify.create({
+    message: "删除成功",
+    type: 'positive',
+    position: 'top',
+    timeout: 2000,
+  });
+
+  // 构建新的 URL 并进行路由替换
+  router.replace({ path: route.path, query: query }).then(() => {
+    // 在路由替换成功后刷新页面
+    location.reload();
+  }).catch((err) => {
+    console.error('路由替换失败:', err);
+  });
 }
 
 // 选定任务
