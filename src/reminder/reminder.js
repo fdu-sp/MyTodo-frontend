@@ -2,6 +2,7 @@ import {getRecentReminders} from "src/api/reminder";
 import {getDetailTaskInfo} from "src/api/task";
 import {Notify} from "quasar";
 import RouterUtils from "src/router/utils";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 const RECENT_HOUR = 1;
 
@@ -55,11 +56,14 @@ const addedTaskIds = new Set();
 /**
  * @description 添加本地提醒；每一个任务ID只会被添加一遍
  * @param {number} taskId 任务ID
- * @param {string} reminderTimestamp 提醒时间戳
+ * @param {string} reminderTimestamp 提醒时间戳，如果为null则直接返回
  * */
 function addLocalReminder(taskId, reminderTimestamp) {
   if (addedTaskIds.has(taskId)) {
     console.log(`TaskId: ${taskId} has already been added.`);
+    return;
+  }
+  if (reminderTimestamp === null) {
     return;
   }
   const reminderTime = new Date(reminderTimestamp);
@@ -104,9 +108,18 @@ function addLocalReminder(taskId, reminderTimestamp) {
         addedTaskIds.delete(taskId); // 移除任务ID
       })
     }, diff);
-    console.log(`TaskId: ${taskId} is added to reminder.`);
+    console.log(`Task with Id(${taskId}) is added to reminder.`);
   }
 }
+
+function handleTaskUpdated(taskDetailResp) {
+  const taskId = taskDetailResp.id;
+  const reminderTimestamp = taskDetailResp.taskTimeInfo.reminderTimestamp;
+  addLocalReminder(taskId, reminderTimestamp);
+}
+
+// 处理 任务更新 的事件
+taskEventEmitter.on(TASK_EVENTS.TASK_UPDATED, handleTaskUpdated);
 
 export default reminderInit;
 export {addLocalReminder};

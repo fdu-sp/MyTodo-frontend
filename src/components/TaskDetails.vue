@@ -84,6 +84,7 @@
 import {ref, watch} from 'vue';
 import {updateTask} from 'src/api/task'; // 导入 updateTask 方法
 import {useQuasar} from 'quasar';
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 // 使用 useQuasar 插件
 const $q = useQuasar();
@@ -116,64 +117,59 @@ function loadPages() {
   location.reload();
 }
 
-// 定义保存任务的函数
-const saveTask = async () => {
-  try {
-
-    console.log(editableRemindTimeStamp.value);
-    // 调用 API 发送更新任务的请求
-    await updateTask({
-      id: props.taskWithDetailInfo.id,
-      title: editableTitle.value,
-      completed: editableCompleted.value,
-      completedTime: editableCompleted.value ? new Date().toISOString().replace('T', ' ').slice(0, 19) : '',
-      archived: props.taskWithDetailInfo.archived,
-      tags: props.taskWithDetailInfo.tags,
-      taskListId: props.taskWithDetailInfo.taskListId,
-      taskListName: props.taskWithDetailInfo.taskListName,
-      inMyDay: props.taskWithDetailInfo.inMyDay,
-      taskContentInfo: {
-        description: editableDescription.value,
-        createTime: props.taskWithDetailInfo.taskContentInfo.createTime,
-        updateTime: new Date().toISOString().replace('T', ' ').slice(0, 19)
-      },
-      taskPriorityInfo: props.taskWithDetailInfo.taskPriorityInfo,
-      taskTimeInfo:
-      // props.taskWithDetailInfo.taskTimeInfo,
-        {
-          endDate: editableEndDate.value,
-          endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
-          reminderTimestamp: editableRemindTimeStamp.value,
-          activateCountdown: props.taskWithDetailInfo.taskTimeInfo.activateCountdown,
-          expectedExecutionDate: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionDate,
-          expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
-          expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
-        }
-
+function saveTask() {
+  console.log(editableRemindTimeStamp.value);
+  // 调用 API 发送更新任务的请求
+  updateTask({
+    id: props.taskWithDetailInfo.id,
+    title: editableTitle.value,
+    completed: editableCompleted.value,
+    completedTime: editableCompleted.value ? new Date().toISOString().replace('T', ' ').slice(0, 19) : '',
+    archived: props.taskWithDetailInfo.archived,
+    tags: props.taskWithDetailInfo.tags,
+    taskListId: props.taskWithDetailInfo.taskListId,
+    taskListName: props.taskWithDetailInfo.taskListName,
+    inMyDay: props.taskWithDetailInfo.inMyDay,
+    taskContentInfo: {
+      description: editableDescription.value,
+      createTime: props.taskWithDetailInfo.taskContentInfo.createTime,
+      updateTime: new Date().toISOString().replace('T', ' ').slice(0, 19)
+    },
+    taskPriorityInfo: props.taskWithDetailInfo.taskPriorityInfo,
+    taskTimeInfo:
+    // props.taskWithDetailInfo.taskTimeInfo,
+      {
+        endDate: editableEndDate.value,
+        endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
+        reminderTimestamp: editableRemindTimeStamp.value,
+        activateCountdown: props.taskWithDetailInfo.taskTimeInfo.activateCountdown,
+        expectedExecutionDate: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionDate,
+        expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
+        expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
+      }
+  })
+    .then((data) => {
+      const taskWithDetailInfo = data.object;
+      // 这里可以添加保存成功后的逻辑，比如提示用户
+      console.log('Task updated successfully!');
+      taskEventEmitter.emit(TASK_EVENTS.TASK_UPDATED, taskWithDetailInfo);
+      $q.notify({
+        message: '更新成功!',
+        color: 'positive',
+        icon: 'check_circle',
+      });
+      loadPages();
+    })
+    .catch((error) => {
+      // 错误处理逻辑
+      console.error('Error updating task:', error);
+      $q.notify({
+        message: '更新失败',
+        color: 'negative',
+        icon: 'report_problem',
+      });
     });
-
-    // 这里可以添加保存成功后的逻辑，比如提示用户
-    console.log('Task updated successfully!');
-    $q.notify({
-      message: '更新成功!',
-      color: 'positive',
-      icon: 'check_circle',
-
-    });
-  } catch (error) {
-    // 错误处理逻辑
-    console.error('Error updating task:', error);
-    $q.notify({
-      message: '更新失败',
-      color: 'negative',
-      icon: 'report_problem',
-    });
-  }
-
-  loadPages();
-};
-
-// ...（省略其他代码）
+}
 </script>
 
 <style scoped>
