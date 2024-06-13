@@ -46,6 +46,7 @@ import {createNewTask} from "src/api/task";
 import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
 import {useRoute, useRouter} from "vue-router";
 import {Notify} from "quasar";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 const props = defineProps({
   listId: {
@@ -114,9 +115,10 @@ function addTask() {
     description: "", // 任务描述, 必填, String, 可以为空字符串
     taskListId: props.listId,
   })
-    .then(() => {
+    .then((data) => {
+      const taskCreateReq = data.object;
       newTaskTitle.value = '';
-      // TODO 调用 TaskEventEmitter 通知任务创建
+      taskEventEmitter.emit(TASK_EVENTS.TASK_CREATED, taskCreateReq)
       loadTaskListData(props.listId);
     })
     .catch((err) => {
@@ -153,10 +155,10 @@ function handleTaskDelete(taskId) {
   reloadPage();
 }
 
-// 更新路由+刷新页面
+// 更新路由+发布任务删除的事件
 function reloadPage() {
   // 获取当前查询参数
-  const query = { ...route.query };
+  const query = {...route.query};
 
   // 删除特定的查询参数值
   if (query.taskId) {
@@ -170,9 +172,8 @@ function reloadPage() {
   });
 
   // 构建新的 URL 并进行路由替换
-  router.replace({ path: route.path, query: query }).then(() => {
-    // 在路由替换成功后刷新页面
-    location.reload();
+  router.replace({path: route.path, query: query}).then(() => {
+    taskEventEmitter.emit(TASK_EVENTS.TASK_DELETED);
   }).catch((err) => {
     console.error('路由替换失败:', err);
   });

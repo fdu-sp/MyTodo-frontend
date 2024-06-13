@@ -87,7 +87,6 @@ import {updateTask} from 'src/api/task'; // 导入 updateTask 方法
 import {Notify, useQuasar} from 'quasar';
 import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 import {addTaskToMyDay} from "src/api/my-day";
-import {useRoute, useRouter} from "vue-router";
 
 // 使用 useQuasar 插件
 const $q = useQuasar();
@@ -114,11 +113,6 @@ watch(() => props.taskWithDetailInfo, (newVal) => {
     editableCompleted.value = newVal.completed;
   }
 }, {immediate: true});
-
-function loadPages() {
-  // 重新加载页面，不影响用户体验
-  location.reload();
-}
 
 function saveTask() {
   console.log(editableRemindTimeStamp.value);
@@ -153,7 +147,6 @@ function saveTask() {
   })
     .then((data) => {
       const taskWithDetailInfo = data.object;
-      // 这里可以添加保存成功后的逻辑，比如提示用户
       console.log('Task updated successfully!');
       taskEventEmitter.emit(TASK_EVENTS.TASK_UPDATED, taskWithDetailInfo);
       $q.notify({
@@ -161,7 +154,6 @@ function saveTask() {
         color: 'positive',
         icon: 'check_circle',
       });
-      loadPages();
     })
     .catch((error) => {
       // 错误处理逻辑
@@ -174,42 +166,19 @@ function saveTask() {
     });
 }
 
-const router = useRouter();
-const route = useRoute();
-
 // 保存到“我的一天”
 function saveTodayTask() {
   let taskId = props.taskWithDetailInfo.id;
 
-  // 假设 addTaskToMyDay 是一个返回 Promise 的异步函数
   addTaskToMyDay(taskId)
     .then(() => {
-      // 保存完成后进行路由跳转或刷新页面
-      if (route.path.startsWith('/today')) {
-        router.push('/today')
-          .then(() => {
-            // 跳转成功后刷新页面
-            Notify.create({
-              message: "成功保存",
-              type: 'positive',
-              position: 'top',
-              timeout: 3000,
-            });
-            loadPages();
-          })
-          .catch((err) => {
-            console.error('路由跳转失败:', err);
-          });
-      } else if (route.path.startsWith('/todo')) {
-        // 只刷新页面
-        Notify.create({
-          message: "成功保存",
-          type: 'positive',
-          position: 'top',
-          timeout: 3000,
-        });
-        loadPages();
-      }
+      Notify.create({
+        message: "成功保存",
+        type: 'positive',
+        position: 'top',
+        timeout: 3000,
+      });
+      taskEventEmitter.emit(TASK_EVENTS.TASK_ADDED_TO_TODAY, taskId);
     })
     .catch((err) => {
       console.error('保存任务失败:', err);

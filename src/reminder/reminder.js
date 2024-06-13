@@ -62,7 +62,8 @@ function addLocalReminder(taskId, reminderTimestamp) {
     console.log(`TaskId: ${taskId} has already been added.`);
     return;
   }
-  if (reminderTimestamp === null) {
+  if (reminderTimestamp === undefined || reminderTimestamp === null) {
+    console.log(`reminderTimestamp not provided.`);
     return;
   }
   const reminderTime = new Date(reminderTimestamp);

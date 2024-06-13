@@ -38,8 +38,9 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {onBeforeUnmount, ref} from 'vue';
 import {getMyDayTasksWithSimpleInfo, getRecommendOfMyDay} from "src/api/my-day";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 const emit = defineEmits(['today-list-selected']);
 
@@ -78,8 +79,21 @@ const taskGroups = ref([
 const unExpandedGroups = ref(new Set());
 
 // 加载所有任务分组
-loadAllTodayTasks();
-loadAllRecommendTasks();
+loadAllData();
+
+// 订阅，任务创建、删除、更新、ASK_ADDED_TO_TODAY 的事件
+taskEventEmitter.on(TASK_EVENTS.TASK_CREATED, loadAllData);
+taskEventEmitter.on(TASK_EVENTS.TASK_UPDATED, loadAllData);
+taskEventEmitter.on(TASK_EVENTS.TASK_DELETED, loadAllData);
+taskEventEmitter.on(TASK_EVENTS.TASK_ADDED_TO_TODAY, loadAllData);
+
+// 在组件销毁时取消事件订阅
+onBeforeUnmount(() => {
+  taskEventEmitter.off(TASK_EVENTS.TASK_CREATED, loadAllData);
+  taskEventEmitter.off(TASK_EVENTS.TASK_UPDATED, loadAllData);
+  taskEventEmitter.off(TASK_EVENTS.TASK_DELETED, loadAllData);
+  taskEventEmitter.off(TASK_EVENTS.TASK_ADDED_TO_TODAY, loadAllData);
+});
 
 function toggleGroup(groupId) {
   if (unExpandedGroups.value.has(groupId)) {
@@ -97,6 +111,11 @@ function selectTodayGroup(groupId) {
   emit('today-list-selected', groupId);
 }
 
+function loadAllData() {
+  loadAllTodayTasks();
+  loadAllRecommendTasks();
+}
+
 // 获取我的一天的任务
 function loadAllTodayTasks() {
   getMyDayTasksWithSimpleInfo()
@@ -107,7 +126,8 @@ function loadAllTodayTasks() {
       console.error('Failed to load all tasks:', err);
     });
 }
- // 获取今日推荐的所有任务
+
+// 获取今日推荐的所有任务
 function loadAllRecommendTasks() {
   getRecommendOfMyDay()
     .then((data) => {

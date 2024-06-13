@@ -26,13 +26,13 @@
 
 
 <script setup>
-import {ref, watch} from "vue";
+import {onBeforeUnmount, ref, watch} from "vue";
 import TaskInList from "components/TaskInList.vue";
 import {getTaskListDetailInfo} from "src/api/task-list";
-import {createNewTask} from "src/api/task";
 import {getTheTaskCurrentlyBeingTimed} from "src/api/timer";
 import {getMyDayTasksWithSimpleInfo, getRecommendOfMyDay} from "src/api/my-day";
 import {useRoute, useRouter} from "vue-router";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 import {Notify} from "quasar";
 
 const props = defineProps({
@@ -58,36 +58,45 @@ watch(() => props.listId, (newListId) => {
   loadTodayTaskListData(newListId);
 });
 
+// 监听 TASK_ADDED_TO_TODAY 事件
+taskEventEmitter.on(TASK_EVENTS.TASK_ADDED_TO_TODAY, handleTaskAddedToToday);
+
+// 在组件销毁时取消事件订阅
+onBeforeUnmount(() => {
+  taskEventEmitter.off(TASK_EVENTS.TASK_ADDED_TO_TODAY, handleTaskAddedToToday);
+});
+
+function handleTaskAddedToToday() {
+  loadTodayTaskListData(props.listId);
+}
+
 // 根据清单ID加载任务列表，注意-1 -2 -3 -4有不同的含义
 function loadTodayTaskListData(listId) {
   if (listId === undefined || listId === null) {
     tasks.value = [];
     return;
   }
-  if(listId === -1) {
+  if (listId === -1) {
     listName.value = "(●'◡'●)今日任务";
     getMyDayTasksWithSimpleInfo().then(data => {
       tasks.value = data.object;
     })
-  } else if(listId === -2) {
+  } else if (listId === -2) {
     listName.value = "🔚即将到来";
     getRecommendOfMyDay().then(data => {
       tasks.value = data.object.tasksEndInThreeDays.taskSimpleRespList;
     })
-  }
-  else if(listId === -3) {
+  } else if (listId === -3) {
     listName.value = "🌍更远的未来";
     getRecommendOfMyDay().then(data => {
       tasks.value = data.object.tasksEndInFourToSevenDays.taskSimpleRespList;
     })
-  }
-  else if(listId === -4) {
+  } else if (listId === -4) {
     listName.value = "❗️已过期";
     getRecommendOfMyDay().then(data => {
       tasks.value = data.object.uncompletedTasksEndBeforeToday.taskSimpleRespList;
     })
-  }
-  else { // 如果是普通清单
+  } else { // 如果是普通清单
     getTaskListDetailInfo(listId)
       .then((data) => {
         listName.value = data.name;
@@ -116,23 +125,6 @@ function tasksSort() {
     // 按标题排序
     return a.title.localeCompare(b.title);
   });
-}
-
-function addTask() {
-  createNewTask({
-    title: newTaskTitle.value,
-    completed: false, // 任务是否完成, 必填, Boolean
-    tagNames: [], // 任务标签, 必填, List<String>, 可以为空列表
-    description: "", // 任务描述, 必填, String, 可以为空字符串
-    taskListId: props.listId,
-  })
-    .then(() => {
-      newTaskTitle.value = '';
-      loadTodayTaskListData(props.listId);
-    })
-    .catch((err) => {
-      console.error('Failed to create new task:', err);
-    });
 }
 
 // 处理任务更新事件
@@ -164,10 +156,10 @@ function handleTaskDelete(taskId) {
   reloadPage();
 }
 
-// 更新路由+刷新页面
+// 更新路由+发布任务删除的事件
 function reloadPage() {
   // 获取当前查询参数
-  const query = { ...route.query };
+  const query = {...route.query};
 
   // 删除特定的查询参数值
   if (query.taskId) {
@@ -181,9 +173,8 @@ function reloadPage() {
   });
 
   // 构建新的 URL 并进行路由替换
-  router.replace({ path: route.path, query: query }).then(() => {
-    // 在路由替换成功后刷新页面
-    location.reload();
+  router.replace({path: route.path, query: query}).then(() => {
+    taskEventEmitter.emit(TASK_EVENTS.TASK_DELETED);
   }).catch((err) => {
     console.error('路由替换失败:', err);
   });

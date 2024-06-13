@@ -73,10 +73,11 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {onBeforeUnmount, ref} from 'vue';
 import CreateTaskListDialog from "components/CreateTaskListDialog.vue";
 import CreateTaskGroupDialog from "components/CreateTaskGroupDialog.vue";
 import {getAllTaskGroupsWithSimpleInfo} from "src/api/task-group";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 const emit = defineEmits(['list-selected']);
 
@@ -91,6 +92,18 @@ const selectedGroupId = ref(null);
 
 // 加载所有任务分组
 loadAllTaskGroups();
+
+// 订阅，任务创建、删除、更新的事件
+taskEventEmitter.on(TASK_EVENTS.TASK_CREATED, loadAllTaskGroups);
+taskEventEmitter.on(TASK_EVENTS.TASK_UPDATED, loadAllTaskGroups);
+taskEventEmitter.on(TASK_EVENTS.TASK_DELETED, loadAllTaskGroups);
+
+// 在组件销毁时取消事件订阅
+onBeforeUnmount(() => {
+  taskEventEmitter.off(TASK_EVENTS.TASK_CREATED, loadAllTaskGroups);
+  taskEventEmitter.off(TASK_EVENTS.TASK_UPDATED, loadAllTaskGroups);
+  taskEventEmitter.off(TASK_EVENTS.TASK_DELETED, loadAllTaskGroups);
+});
 
 function toggleGroup(groupId) {
   if (unExpandedGroups.value.has(groupId)) {
