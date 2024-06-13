@@ -1,23 +1,16 @@
 <template>
   <div v-if="taskWithDetailInfo" class="task-details">
     <!-- 任务标题编辑 -->
-<<<<<<< HEAD
     <q-input filled v-model="editableTitle" label="任务标题"/>
 
     <!-- 任务描述编辑 -->
     <q-input filled v-model="editableDescription" label="任务描述"/>
-=======
-    <q-input filled v-model="editableTitle" label="任务标题" />
-
-    <!-- 任务描述编辑 -->
-    <q-input filled v-model="editableDescription" label="任务描述" />
->>>>>>> origin/main
 
     <!-- 任务截止日期编辑 -->
     <!-- <q-input filled v-model="editableEndDate" mask="####-##-##" label="截止日期" /> -->
 
 
-    <q-input filled v-model="editableRemindTimeStamp" label="提醒时间戳">
+    <q-input filled v-model="editableRemindTimeStamp" label="提醒时间">
       <template v-slot:prepend>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -45,7 +38,7 @@
 
 
     <q-input filled v-model="editableEndDate" label="截止日期">
-      <template v-slot:append>
+      <template v-slot:prepend>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
             <q-date v-model="editableEndDate" mask="YYYY-MM-DD">
@@ -65,15 +58,20 @@
       </q-chip>
     </div>
 
-    <!-- 完成与紧急状态 -->
+    <!-- 紧急状态 -->
     <p>
-      <span v-if="taskWithDetailInfo.taskPriorityInfo.isImportant" class="important">重要</span>
-      <span v-if="taskWithDetailInfo.taskPriorityInfo.isUrgent" class="urgent">紧急</span>
-      <q-toggle v-model="editableCompleted" label="已完成"/>
-
+      <q-chip v-if="taskWithDetailInfo.taskPriorityInfo.isImportant" color="red" text-color="white" class="important">
+        重要
+      </q-chip>
+      <q-chip v-if="taskWithDetailInfo.taskPriorityInfo.isUrgent" class="urgent">
+        紧急
+      </q-chip>
     </p>
-
-    <q-btn icon="save" label="保存" @click="saveTask"/>
+    <!-- 完成情况 -->
+    <div>
+      <!--      <q-toggle v-model="editableCompleted" label="已完成"/>-->
+      <q-btn icon="save" label="保存" @click="saveTask"/>
+    </div>
   </div>
   <div v-else class="no-task">
     <!-- 当没有任务被选中时显示 -->
@@ -142,7 +140,6 @@ const saveTask = async () => {
       taskPriorityInfo: props.taskWithDetailInfo.taskPriorityInfo,
       taskTimeInfo:
       // props.taskWithDetailInfo.taskTimeInfo,
-<<<<<<< HEAD
         {
           endDate: editableEndDate.value,
           endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
@@ -152,17 +149,6 @@ const saveTask = async () => {
           expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
           expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
         }
-=======
-      {
-        endDate: editableEndDate.value ,
-        endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
-        reminderTimestamp: editableRemindTimeStamp.value,
-        activateCountdown: props.taskWithDetailInfo.taskTimeInfo.activateCountdown,
-        expectedExecutionDate: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionDate,
-        expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
-        expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
-      }
->>>>>>> origin/main
 
     });
 
