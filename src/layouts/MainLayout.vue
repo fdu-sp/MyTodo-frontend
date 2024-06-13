@@ -4,7 +4,8 @@
       <q-toolbar class="toolbar" style="height: 64px">
         <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
           <!--          <img src="https://cdn.quasar.dev/img/layout-gallery/logo-google.svg">-->
-          <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>
+<!--          <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>-->
+          <div><img src="src/assets/mytodo.png" alt="😉𝑴𝒚𝑻𝒐𝒅𝒐" style="width: 130px; height: 75px"></div>
         </q-toolbar-title>
 
         <q-space/>

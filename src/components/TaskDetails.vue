@@ -1,10 +1,17 @@
 <template>
   <div v-if="taskWithDetailInfo" class="task-details">
     <!-- 任务标题编辑 -->
+<<<<<<< HEAD
     <q-input filled v-model="editableTitle" label="任务标题"/>
 
     <!-- 任务描述编辑 -->
     <q-input filled v-model="editableDescription" label="任务描述"/>
+=======
+    <q-input filled v-model="editableTitle" label="任务标题" />
+
+    <!-- 任务描述编辑 -->
+    <q-input filled v-model="editableDescription" label="任务描述" />
+>>>>>>> origin/main
 
     <!-- 任务截止日期编辑 -->
     <!-- <q-input filled v-model="editableEndDate" mask="####-##-##" label="截止日期" /> -->
@@ -106,6 +113,11 @@ watch(() => props.taskWithDetailInfo, (newVal) => {
   }
 }, {immediate: true});
 
+function loadPages() {
+  // 重新加载页面，不影响用户体验
+  location.reload();
+}
+
 // 定义保存任务的函数
 const saveTask = async () => {
   try {
@@ -130,6 +142,7 @@ const saveTask = async () => {
       taskPriorityInfo: props.taskWithDetailInfo.taskPriorityInfo,
       taskTimeInfo:
       // props.taskWithDetailInfo.taskTimeInfo,
+<<<<<<< HEAD
         {
           endDate: editableEndDate.value,
           endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
@@ -139,6 +152,17 @@ const saveTask = async () => {
           expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
           expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
         }
+=======
+      {
+        endDate: editableEndDate.value ,
+        endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
+        reminderTimestamp: editableRemindTimeStamp.value,
+        activateCountdown: props.taskWithDetailInfo.taskTimeInfo.activateCountdown,
+        expectedExecutionDate: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionDate,
+        expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
+        expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
+      }
+>>>>>>> origin/main
 
     });
 
@@ -159,6 +183,8 @@ const saveTask = async () => {
       icon: 'report_problem',
     });
   }
+
+  loadPages();
 };
 
 // ...（省略其他代码）
