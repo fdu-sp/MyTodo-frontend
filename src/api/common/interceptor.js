@@ -1,5 +1,5 @@
 import {LoadingBar} from "quasar";
-import apiEmitter, {API_EVENTS} from "src/event/ApiEventEmitter";
+import apiEmitter, {API_ERROR_EVENTS} from "src/event/ApiErrorEventEmitter";
 
 export function requestFulfilled(config) {
   LoadingBar.start();
@@ -42,15 +42,15 @@ export function responseFulfilled(res) {
   // 获取错误信息
   const msg = res.data.msg;
   if (code === 401) {
-    apiEmitter.emit(API_EVENTS.UN_AUTH, msg);
+    apiEmitter.emit(API_ERROR_EVENTS.UN_AUTH, msg);
     return Promise.reject(new Error(msg));
   } else if (code === 500) {
     // 服务器内部错误
-    apiEmitter.emit(API_EVENTS.INTERNAL_ERROR, msg, silent);
+    apiEmitter.emit(API_ERROR_EVENTS.INTERNAL_ERROR, msg, silent);
     return Promise.reject(new Error(msg));
   } else if (code !== 200) {
     // 请求失败 但未区分状态码
-    apiEmitter.emit(API_EVENTS.OTHER_ERROR, msg, silent);
+    apiEmitter.emit(API_ERROR_EVENTS.OTHER_ERROR, msg, silent);
     return Promise.reject(new Error(msg));
   } else {
     // code = 200 时
@@ -58,7 +58,7 @@ export function responseFulfilled(res) {
       if (res.data.success) { // 业务成功
         return res.data;
       } else { // 业务失败
-        apiEmitter.emit(API_EVENTS.OTHER_ERROR, msg, silent);
+        apiEmitter.emit(API_ERROR_EVENTS.OTHER_ERROR, msg, silent);
         return Promise.reject(res);
       }
     } else { // 非 uxApi，直接返回res
@@ -78,6 +78,6 @@ export function responseRejected(error) {
   } else if (message.includes("Request failed with status code")) {
     message = "请求异常";
   }
-  apiEmitter.emit(API_EVENTS.NETWORK_ERROR, message, error.config.silent);
+  apiEmitter.emit(API_ERROR_EVENTS.NETWORK_ERROR, message, error.config.silent);
   return Promise.reject(error);
 }

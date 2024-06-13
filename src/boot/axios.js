@@ -1,7 +1,7 @@
 import {boot} from 'quasar/wrappers'
 import axios from 'axios'
 import {requestFulfilled, requestRejected, responseFulfilled, responseRejected} from "src/api/common/interceptor";
-import apiEventEmitter, {API_EVENTS} from "src/event/ApiEventEmitter";
+import apiEventEmitter, {API_ERROR_EVENTS} from "src/event/ApiErrorEventEmitter";
 import {Notify} from "quasar";
 
 const api = axios.create({
@@ -24,7 +24,7 @@ api.interceptors.response.use(
 
 // 请求错误的全局事件处理器
 // 在这里处理，可以只注册一遍
-apiEventEmitter.on(API_EVENTS.INTERNAL_ERROR, (msg, silent) => {
+apiEventEmitter.on(API_ERROR_EVENTS.INTERNAL_ERROR, (msg, silent) => {
   console.error("请求错误的全局事件处理器，INTERNAL_ERROR：", msg);
   const shouldSilent = silent || false;
   if (!shouldSilent) {
@@ -36,7 +36,7 @@ apiEventEmitter.on(API_EVENTS.INTERNAL_ERROR, (msg, silent) => {
     });
   }
 });
-apiEventEmitter.on(API_EVENTS.OTHER_ERROR, (msg, silent) => {
+apiEventEmitter.on(API_ERROR_EVENTS.OTHER_ERROR, (msg, silent) => {
   console.warn("请求错误的全局事件处理器，OTHER_ERROR：", msg);
   const shouldSilent = silent || false;
   if (!shouldSilent) {
@@ -48,7 +48,7 @@ apiEventEmitter.on(API_EVENTS.OTHER_ERROR, (msg, silent) => {
     });
   }
 });
-apiEventEmitter.on(API_EVENTS.NETWORK_ERROR, (msg, silent) => {
+apiEventEmitter.on(API_ERROR_EVENTS.NETWORK_ERROR, (msg, silent) => {
   console.error("请求错误的全局事件处理器，NETWORK_ERROR：", msg);
   const shouldSilent = silent || false;
   if (!shouldSilent) {
