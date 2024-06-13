@@ -38,7 +38,7 @@
         <!--            </q-list>-->
         <!--          </q-menu>-->
         <!--        </q-btn>-->
-        <div ref="timerContainer" class="timer-container animated-shake">
+        <div ref="timerContainerRef" class="timer-container animated-shake">
           <q-btn
             flat
             dense
@@ -258,7 +258,9 @@ function calTodayTaskNum() {
 onMounted(() => {
   //* 加载页面时的运行函数
   checkForTimedTasksAtStartup();
-  shakeTimer(); // Ensure it's called after everything is mounted
+  nextTick(() => {
+    shakeTimer(); // 确保在DOM更新完毕后执行动画
+  });
   calTodayTaskNum();
 });
 // onUnmounted: 组件销毁时清除计时器
