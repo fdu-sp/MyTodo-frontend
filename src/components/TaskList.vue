@@ -111,6 +111,7 @@ function addTask() {
   })
     .then(() => {
       newTaskTitle.value = '';
+      // TODO 调用 TaskEventEmitter 通知任务创建
       loadTaskListData(props.listId);
     })
     .catch((err) => {
