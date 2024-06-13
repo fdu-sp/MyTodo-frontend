@@ -30,7 +30,10 @@ export function getSimpleTaskInfo(taskId) {
   return api.get(`/task/simple/get-info/${taskId}`);
 }
 
-export function updateTask(taskUpdateReq){
+/**
+ * 返回的 data.object 为 TaskDetailResp
+ * */
+export function updateTask(taskUpdateReq) {
   return api.post('/task/update', taskUpdateReq);
 }
 
