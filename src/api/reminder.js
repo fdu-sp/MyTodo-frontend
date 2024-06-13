@@ -16,38 +16,38 @@ export function getAllReminders() {
  * @param {number} hour 小时数
  * */
 export function getRecentReminders(hour) {
-  // return api.get(`/reminder/get-recent/${hour}`);
-  // TODO 改为使用真实请求
+  return api.get(`/reminder/get-recent/${hour}`);
+  // 改为使用真实请求
   // 模拟提醒信息
-  return new Promise((resolve, reject) => {
-    const now = new Date();
-    const two_seconds_later = new Date(now);
-    const three_seconds_later = new Date(now);
-    const later = new Date(now);
-    two_seconds_later.setSeconds(now.getSeconds() + 2);
-    three_seconds_later.setSeconds(now.getSeconds() + 3);
-    later.setSeconds(now.getSeconds() + 10);
-    resolve({
-      code: 200,
-      message: 'success',
-      object: [
-        {
-          taskId: 1,
-          reminderTimestamp: two_seconds_later.toISOString(),
-        },
-        {
-          taskId: 2,
-          reminderTimestamp: two_seconds_later.toISOString(),
-        },
-        {
-          taskId: 3,
-          reminderTimestamp: three_seconds_later.toISOString(),
-        },
-        {
-          taskId: 5,
-          reminderTimestamp: later.toISOString(),
-        },
-      ]
-    });
-  });
+  // return new Promise((resolve, reject) => {
+  //   const now = new Date();
+  //   const two_seconds_later = new Date(now);
+  //   const three_seconds_later = new Date(now);
+  //   const later = new Date(now);
+  //   two_seconds_later.setSeconds(now.getSeconds() + 2);
+  //   three_seconds_later.setSeconds(now.getSeconds() + 3);
+  //   later.setSeconds(now.getSeconds() + 10);
+  //   resolve({
+  //     code: 200,
+  //     message: 'success',
+  //     object: [
+  //       {
+  //         taskId: 1,
+  //         reminderTimestamp: two_seconds_later.toISOString(),
+  //       },
+  //       {
+  //         taskId: 2,
+  //         reminderTimestamp: two_seconds_later.toISOString(),
+  //       },
+  //       {
+  //         taskId: 3,
+  //         reminderTimestamp: three_seconds_later.toISOString(),
+  //       },
+  //       {
+  //         taskId: 5,
+  //         reminderTimestamp: later.toISOString(),
+  //       },
+  //     ]
+  //   });
+  // });
 }
