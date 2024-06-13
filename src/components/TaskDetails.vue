@@ -1,22 +1,22 @@
 <template>
   <div v-if="taskWithDetailInfo" class="task-details">
     <!-- 任务标题编辑 -->
-    <q-input filled v-model="editableTitle" label="任务标题" />
-    
+    <q-input filled v-model="editableTitle" label="任务标题"/>
+
     <!-- 任务描述编辑 -->
-    <q-input filled v-model="editableDescription" label="任务描述" />
-    
+    <q-input filled v-model="editableDescription" label="任务描述"/>
+
     <!-- 任务截止日期编辑 -->
     <!-- <q-input filled v-model="editableEndDate" mask="####-##-##" label="截止日期" /> -->
 
 
-    <q-input filled v-model="editableRemindTimeStamp" label="提醒时间戳" >
+    <q-input filled v-model="editableRemindTimeStamp" label="提醒时间戳">
       <template v-slot:prepend>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
             <q-date v-model="editableRemindTimeStamp" mask="YYYY-MM-DD HH:mm:ss">
               <div class="row items-center justify-end">
-                <q-btn v-close-popup label="Close" color="primary" flat />
+                <q-btn v-close-popup label="Close" color="primary" flat/>
               </div>
             </q-date>
           </q-popup-proxy>
@@ -26,9 +26,9 @@
       <template v-slot:append>
         <q-icon name="access_time" class="cursor-pointer">
           <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-            <q-time v-model="editableRemindTimeStamp" mask="YYYY-MM-DD HH:mm:ss"  format24h>
+            <q-time v-model="editableRemindTimeStamp" mask="YYYY-MM-DD HH:mm:ss" format24h>
               <div class="row items-center justify-end">
-                <q-btn v-close-popup label="Close" color="primary" flat />
+                <q-btn v-close-popup label="Close" color="primary" flat/>
               </div>
             </q-time>
           </q-popup-proxy>
@@ -37,14 +37,13 @@
     </q-input>
 
 
-
-    <q-input filled v-model="editableEndDate" label="截止日期" >
+    <q-input filled v-model="editableEndDate" label="截止日期">
       <template v-slot:append>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
             <q-date v-model="editableEndDate" mask="YYYY-MM-DD">
               <div class="row items-center justify-end">
-                <q-btn v-close-popup label="Close" color="primary" flat />
+                <q-btn v-close-popup label="Close" color="primary" flat/>
               </div>
             </q-date>
           </q-popup-proxy>
@@ -61,13 +60,13 @@
 
     <!-- 完成与紧急状态 -->
     <p>
-          <span v-if="taskWithDetailInfo.taskPriorityInfo.isImportant" class="important">重要</span>
+      <span v-if="taskWithDetailInfo.taskPriorityInfo.isImportant" class="important">重要</span>
       <span v-if="taskWithDetailInfo.taskPriorityInfo.isUrgent" class="urgent">紧急</span>
-      <q-toggle v-model="editableCompleted" label="已完成" />
+      <q-toggle v-model="editableCompleted" label="已完成"/>
 
     </p>
 
-    <q-btn icon="save" label="保存" @click="saveTask" />
+    <q-btn icon="save" label="保存" @click="saveTask"/>
   </div>
   <div v-else class="no-task">
     <!-- 当没有任务被选中时显示 -->
@@ -77,9 +76,9 @@
 
 
 <script setup>
-import { defineProps, ref, watch } from 'vue';
-import { updateTask } from 'src/api/task'; // 导入 updateTask 方法
-import { useQuasar } from 'quasar';
+import {ref, watch} from 'vue';
+import {updateTask} from 'src/api/task'; // 导入 updateTask 方法
+import {useQuasar} from 'quasar';
 
 // 使用 useQuasar 插件
 const $q = useQuasar();
@@ -98,19 +97,19 @@ const props = defineProps({
 // 监听 taskWithDetailInfo 变化来更新响应式引用
 watch(() => props.taskWithDetailInfo, (newVal) => {
   if (newVal) {
-        // 直接使用提醒时间的时间戳
+    // 直接使用提醒时间的时间戳
     editableRemindTimeStamp.value = newVal.taskTimeInfo.reminderTimestamp;
     editableTitle.value = newVal.title;
     editableDescription.value = newVal.taskContentInfo.description;
     editableEndDate.value = newVal.taskTimeInfo.endDate;
     editableCompleted.value = newVal.completed;
   }
-}, { immediate: true });
+}, {immediate: true});
 
 // 定义保存任务的函数
 const saveTask = async () => {
   try {
-    
+
     console.log(editableRemindTimeStamp.value);
     // 调用 API 发送更新任务的请求
     await updateTask({
@@ -129,17 +128,17 @@ const saveTask = async () => {
         updateTime: new Date().toISOString().replace('T', ' ').slice(0, 19)
       },
       taskPriorityInfo: props.taskWithDetailInfo.taskPriorityInfo,
-      taskTimeInfo: 
+      taskTimeInfo:
       // props.taskWithDetailInfo.taskTimeInfo,
-      {
-        endDate: editableEndDate.value ,
-        endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
-        reminderTimestamp: editableRemindTimeStamp.value,
-        activateCountdown: props.taskWithDetailInfo.taskTimeInfo.activateCountdown,
-        expectedExecutionDate: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionDate,
-        expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
-        expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod      
-      } 
+        {
+          endDate: editableEndDate.value,
+          endTime: props.taskWithDetailInfo.taskTimeInfo.endTime,
+          reminderTimestamp: editableRemindTimeStamp.value,
+          activateCountdown: props.taskWithDetailInfo.taskTimeInfo.activateCountdown,
+          expectedExecutionDate: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionDate,
+          expectedExecutionStartPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionStartPeriod,
+          expectedExecutionEndPeriod: props.taskWithDetailInfo.taskTimeInfo.expectedExecutionEndPeriod
+        }
 
     });
 
@@ -149,12 +148,12 @@ const saveTask = async () => {
       message: '更新成功!',
       color: 'positive',
       icon: 'check_circle',
-      
+
     });
   } catch (error) {
     // 错误处理逻辑
     console.error('Error updating task:', error);
-     $q.notify({
+    $q.notify({
       message: '更新失败',
       color: 'negative',
       icon: 'report_problem',
