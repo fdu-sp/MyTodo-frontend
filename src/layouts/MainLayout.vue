@@ -11,12 +11,12 @@
         <q-space/>
 
         <!--        全局搜索功能   -->
-        <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">
-          <template v-slot:prepend>
-            <q-icon v-if="search === ''" name="search"/>
-            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>
-          </template>
-        </q-input>
+<!--        <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">-->
+<!--          <template v-slot:prepend>-->
+<!--            <q-icon v-if="search === ''" name="search"/>-->
+<!--            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>-->
+<!--          </template>-->
+<!--        </q-input>-->
 
         <div class="current-task" :class="{ 'no-task': !currentTask.taskId }">
           <q-chip
