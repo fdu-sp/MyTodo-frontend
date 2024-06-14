@@ -182,6 +182,7 @@ function handleToggle(value) {
   } else {
     deleteFromTodayTask();
   }
+  taskEventEmitter.emit(TASK_EVENTS.TASK_ADDED_TO_TODAY, props.taskWithDetailInfo.id);
 }
 
 // 保存到“我的一天”

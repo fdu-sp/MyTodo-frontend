@@ -117,11 +117,12 @@
 </template>
 
 <script setup>
-import {ref, computed, onUnmounted, watch, nextTick, onMounted} from 'vue'
+import {ref, computed, onUnmounted, watch, nextTick, onMounted, onBeforeUnmount} from 'vue'
 import {createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer} from "src/api/timer";
 import {useRoute, useRouter} from "vue-router";
 import {getSimpleTaskInfo} from "src/api/task";
 import {getMyDayTasksWithSimpleInfo} from "src/api/my-day";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 const todayTaskNum = ref(0); // 今日任务数量
 
@@ -166,6 +167,16 @@ const shakeTimer = () => {
     }
   })
 }
+
+// 监听 TASK_ADDED_TO_TODAY 事件
+taskEventEmitter.on(TASK_EVENTS.TASK_ADDED_TO_TODAY, calTodayTaskNum);
+taskEventEmitter.on(TASK_EVENTS.TASK_DELETED, calTodayTaskNum);
+
+// 在组件销毁时取消事件订阅
+onBeforeUnmount(() => {
+  taskEventEmitter.off(TASK_EVENTS.TASK_ADDED_TO_TODAY, calTodayTaskNum);
+  taskEventEmitter.off(TASK_EVENTS.TASK_DELETED, calTodayTaskNum);
+});
 
 function readRoutingInformation() {
   if (route.query.taskId) {
