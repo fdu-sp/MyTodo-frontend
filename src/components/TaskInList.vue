@@ -21,6 +21,7 @@
 <script setup>
 import {ref, watch} from "vue";
 import {completeTask, deleteTask, getSimpleTaskInfo, unCompleteTask} from "src/api/task";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 const props = defineProps({
   taskId: Number,
@@ -51,9 +52,11 @@ function loadTaskData(taskId) {
 
 function toggleCompleted(value) {
   const updateTaskStatus = value ? completeTask : unCompleteTask;
+  const taskStatusEvent = value ? TASK_EVENTS.TASK_COMPLETED : TASK_EVENTS.TASK_UNCOMPLETED;
   updateTaskStatus(props.taskId)
     .then(() => {
       emit('task-updated', {taskId: props.taskId, completed: value});
+      taskEventEmitter.emit(taskStatusEvent, props.taskId);
     })
     .catch(err => {
       console.error('Failed to update task status:', err);

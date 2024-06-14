@@ -8,7 +8,7 @@
           <div><img src="src/assets/mytodo.png" alt="😉𝑴𝒚𝑻𝒐𝒅𝒐" style="width: 130px; height: 75px"></div>
         </q-toolbar-title>
 
-        <q-space />
+        <q-space/>
 
         <!--        全局搜索功能   -->
         <!--        <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">-->
@@ -20,7 +20,7 @@
 
         <div class="current-task" :class="{ 'no-task': !currentTask.taskId }">
           <q-chip outline color="primary" text-color="white" icon="event"
-            :class="{ 'no-task-chip': !currentTask.taskId }">
+                  :class="{ 'no-task-chip': !currentTask.taskId }">
             当前任务：
             <div class="current-task-name">{{ currentTask.taskName }}</div>
           </q-chip>
@@ -35,14 +35,14 @@
         <!--        </q-btn>-->
         <div ref="timerContainerRef" class="timer-container animated-shake">
           <q-btn flat dense no-wrap color="primary" :icon="timerRunning ? 'stop_circle' : 'play_circle'" no-caps
-            :label="timerRunning ? 'Stop Timer' : 'Start Timer'" @click="toggleTimer" class="q-ml-sm q-px-md" />
+                 :label="timerRunning ? 'Stop Timer' : 'Start Timer'" @click="toggleTimer" class="q-ml-sm q-px-md"/>
           <div class="timer-display">
             <!-- 显示计时时间 -->
             {{ formattedTime }}
           </div>
         </div>
 
-        <q-space />
+        <q-space/>
 
         <div class="q-gutter-sm row items-center no-wrap">
           <!-- <q-btn round dense flat color="grey-8" icon="notifications">
@@ -62,7 +62,7 @@
     </q-header>
 
     <q-page-container class="page-container">
-      <router-view /> <!--  NOTES:  这里是路由的位置  -->
+      <router-view/> <!--  NOTES:  这里是路由的位置  -->
 
       <!--       NOTES: 侧边栏（非折叠）-->
       <q-page-sticky v-if="$q.screen.gt.sm" expand position="left">
@@ -74,12 +74,12 @@
 
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/todo">
-            <q-icon size="22px" name="collections_bookmark" />
+            <q-icon size="22px" name="collections_bookmark"/>
             <div class="side-btn__label">TodoList</div>
           </q-btn>
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/today">
-            <q-icon size="22px" name="assistant" />
+            <q-icon size="22px" name="assistant"/>
             <div class="side-btn__label">Today</div>
             <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">
               {{ todayTaskNum }}
@@ -92,7 +92,7 @@
           <!--          </q-btn>-->
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/statistic">
-            <q-icon size="22px" name="import_contacts" />
+            <q-icon size="22px" name="import_contacts"/>
             <div class="side-btn__label">Statistic</div>
           </q-btn>
         </div>
@@ -102,12 +102,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
-import { createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer } from "src/api/timer";
-import { useRoute, useRouter } from "vue-router";
-import { getSimpleTaskInfo } from "src/api/task";
-import { getMyDayTasksWithSimpleInfo } from "src/api/my-day";
-import taskEventEmitter, { TASK_EVENTS } from "src/event/TaskEventEmitter";
+import {ref, computed, onUnmounted, watch, nextTick, onMounted, onBeforeUnmount} from 'vue'
+import {createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer} from "src/api/timer";
+import {useRoute, useRouter} from "vue-router";
+import {getSimpleTaskInfo} from "src/api/task";
+import {getMyDayTasksWithSimpleInfo} from "src/api/my-day";
+import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
 
 const todayTaskNum = ref(0); // 今日任务数量
 
@@ -156,12 +156,23 @@ const shakeTimer = () => {
 // 监听 TASK_ADDED_TO_TODAY 事件
 taskEventEmitter.on(TASK_EVENTS.TASK_ADDED_TO_TODAY, calTodayTaskNum);
 taskEventEmitter.on(TASK_EVENTS.TASK_DELETED, calTodayTaskNum);
-
+taskEventEmitter.on(TASK_EVENTS.TASK_COMPLETED, handleTaskCompleted);
+taskEventEmitter.on(TASK_EVENTS.TASK_UNCOMPLETED, calTodayTaskNum);
 // 在组件销毁时取消事件订阅
 onBeforeUnmount(() => {
   taskEventEmitter.off(TASK_EVENTS.TASK_ADDED_TO_TODAY, calTodayTaskNum);
   taskEventEmitter.off(TASK_EVENTS.TASK_DELETED, calTodayTaskNum);
+  taskEventEmitter.off(TASK_EVENTS.TASK_COMPLETED, handleTaskCompleted);
+  taskEventEmitter.off(TASK_EVENTS.TASK_UNCOMPLETED, calTodayTaskNum);
 });
+
+// 任务完成时的处理
+function handleTaskCompleted(taskId) {
+  calTodayTaskNum();
+  if(taskId && Number(currentTask.value.taskId) === Number(taskId)) {
+    stopLocalTimer();
+  }
+}
 
 function readRoutingInformation() {
   if (route.query.taskId) {
@@ -170,6 +181,7 @@ function readRoutingInformation() {
     console.log("当前任务ID：", currentTask.value.taskId);
 
     getSimpleTaskInfo(currentTask.value.taskId).then(data => {
+      console.log(timerId.value);
       if (timerId.value == null) { // 如果当前没有计时器
         currentTask.value.taskName = data.object.title;
         //!BUG: nextTick().then(() => {
@@ -228,26 +240,37 @@ function startTimer() {
 
 }
 
-function stopTimer() {
+// 停止前端计时器
+function stopLocalTimer() {
   clearInterval(timerInterval);
   timerInterval = null;
   timerRunning.value = false;
   setTimeout(() => {
     currentTime.value = startTime.value;
   }, 500);
+  timerId.value = null; //重新设置为null
+}
+
+// 停止后端计时器
+function stopRemoteTimer() {
   if (timerId.value != null) {
     updateTimer(timerId.value).then(data => {
       console.log("更新计时器：", data);
       console.log(data.msg)
     });
-    timerId.value = null; //重新设置为null
   }
+}
+
+function stopTimer() {
+  stopLocalTimer();
+  stopRemoteTimer();
 }
 
 function calTodayTaskNum() {
   // 获取今日任务数量
   getMyDayTasksWithSimpleInfo().then(data => {
-    todayTaskNum.value = data.object.length;
+    const incompleteTasks = data.object.filter(task => !task.completed);
+    todayTaskNum.value = incompleteTasks.length;
   });
 }
 
@@ -273,22 +296,22 @@ onUnmounted(() => {
 //数据
 const links1 = [
   // {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
-  { icon: 'assistant', text: 'Today', url: '/today' },
-  { icon: 'photo_album', text: 'TodoList', url: '/todo' },
-  { icon: '', text: 'Group', url: '/group' },
+  {icon: 'assistant', text: 'Today', url: '/today'},
+  {icon: 'photo_album', text: 'TodoList', url: '/todo'},
+  {icon: '', text: 'Group', url: '/group'},
   // {icon: 'people', text: 'Matrix', url: '/matrix'},
-  { icon: 'book', text: 'Statistic', url: '/statistic' }
+  {icon: 'book', text: 'Statistic', url: '/statistic'}
 ];
 
 const links2 = [
-  { icon: 'archive', text: 'Archive', url: '/archive' },
-  { icon: 'delete', text: 'Trash', url: '/trash' }
+  {icon: 'archive', text: 'Archive', url: '/archive'},
+  {icon: 'delete', text: 'Trash', url: '/trash'}
 ];
 
 const links3 = [
-  { icon: 'settings', text: 'Settings' },
-  { icon: 'help', text: 'Help & Feedback' },
-  { icon: 'get_app', text: 'App Downloads' }
+  {icon: 'settings', text: 'Settings'},
+  {icon: 'help', text: 'Help & Feedback'},
+  {icon: 'get_app', text: 'App Downloads'}
 ];
 // const createMenu: [
 //   { icon: 'photo_album', text: 'Today Todo' },
