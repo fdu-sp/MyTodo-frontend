@@ -137,15 +137,6 @@ function handleTaskComplete(updatedTask) {
     return task;
   });
   tasksSort();
-  getTheTaskCurrentlyBeingTimed().then(data => {
-    if (!data.object) {
-      console.log("没有正在计时的任务！");
-    } else {
-      console.log("当前正在计时的任务是：", data.object);
-      // currentTask.value = data.object;
-      // TODO: 在这个页面怎么更新计时器视图
-    }
-  });
 }
 
 // 处理任务删除事件

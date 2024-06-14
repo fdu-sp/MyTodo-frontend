@@ -9,6 +9,10 @@ const TASK_EVENTS = Object.freeze({
   TASK_DELETED: Symbol('task_deleted'),
   // 参数：taskId
   TASK_ADDED_TO_TODAY: Symbol('task_added_to_today'),
+  // 参数：taskId
+  TASK_COMPLETED: Symbol('task_completed_update'),
+  // 参数：taskId
+  TASK_UNCOMPLETED: Symbol('task_uncompleted_update'),
 });
 
 class TaskEventEmitter extends EventEmitter {
