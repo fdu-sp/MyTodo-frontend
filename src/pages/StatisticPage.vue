@@ -148,7 +148,7 @@ onMounted(() => {
         },
         series: [
           {
-            name: '完成任务数量',
+            name: '专注时长',
             type: 'bar',
             data: focusTimes
           }

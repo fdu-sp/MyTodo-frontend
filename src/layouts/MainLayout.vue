@@ -258,6 +258,10 @@ onMounted(() => {
     shakeTimer(); // 确保在DOM更新完毕后执行动画
   });
   calTodayTaskNum();
+
+  // 切换子页面保持当前任务
+  // if (timerRunning.value)
+  console.log("切换任务：", timerId.value);
 });
 // onUnmounted: 组件销毁时清除计时器
 onUnmounted(() => {
