@@ -13,19 +13,19 @@
             <q-card class="q-ma-md">
               <q-card-section>
                 <div class="text-subtitle1">总任务数</div>
-                <div class="text-h6">30</div>
+                <div class="text-h6">{{ total }}</div>
               </q-card-section>
             </q-card>
             <q-card class="q-ma-md">
               <q-card-section>
                 <div class="text-subtitle1">已完成任务数</div>
-                <div class="text-h6">10</div>
+                <div class="text-h6">{{ finish }}</div>
               </q-card-section>
             </q-card>
             <q-card class="q-ma-md">
               <q-card-section>
                 <div class="text-subtitle1">未完成任务数</div>
-                <div class="text-h6">20</div>
+                <div class="text-h6">{{ unfinish }}</div>
               </q-card-section>
             </q-card>
           </div>
@@ -54,99 +54,155 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
+import { getTimeWeekAnalyis, getTimeMonthAnalyis, getTask, getGroudName } from '../api/statistic';
+
+const total = ref(0);
+const finish = ref(0);
+const unfinish = ref(0);
 
 onMounted(() => {
-  // 饼图配置
-  let pieChart = echarts.init(document.getElementById('pieChart'));
-  let pieOption = {
-    title: {
-      text: '今日任务完成情况',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left'
-    },
-    series: [
-      {
-        name: '任务状态',
-        type: 'pie',
-        radius: '50%',
-        data: [
-          { value: 10, name: '已完成' },
-          { value: 5, name: '进行中' },
-          { value: 15, name: '未开始' }
-        ],
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
+  let days = [];
+  let focusTimes = [];
+
+  getTimeWeekAnalyis().then(res => {
+    // console.log('res', res.object.focusTimeEveryDay);
+    const data = res.object.focusTimeEveryDay;
+    data.sort((a, b) => new Date(a.day) - new Date(b.day));
+    // console.log('data', data);
+
+    days = data.map(item => item.day);
+    focusTimes = data.map(item => item.focusTime);
+
+    // console.log('days', days);
+    // console.log('focusTimes', focusTimes);
+
+    // 柱状图配置
+    let barChart = echarts.init(document.getElementById('lineChart'));
+    let barOption = {
+      title: {
+        text: '本周专注时长情况',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      xAxis: {
+        type: 'category',
+        data: days
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: '专注时长',
+          type: 'line',
+          data: focusTimes
+        }
+      ]
+    };
+    barChart.setOption(barOption);
+  });
+
+
+  getTimeMonthAnalyis().then(res => {
+    console.log('res', res.object.focusTimeEveryTaskList);
+    const data = res.object.focusTimeEveryTaskList;
+
+    let taskListNames = [];
+    let taskListids = [];
+    let focusTimes = [];
+
+    data.forEach(item => {
+      taskListids.push(item.taskListId);
+      focusTimes.push(item.focusTime);
+    });
+
+    // 对于每一个id，获取对应的taskListName
+    const promises = taskListids.map(id => {
+      return getGroudName(id).then(res => {
+        return res.object.name;
+      });
+    });
+
+    Promise.all(promises).then(names => {
+      taskListNames = names;
+      // 折线图配置
+      let lineChart = echarts.init(document.getElementById('barChart'));
+      let lineOption = {
+        title: {
+          text: '本月各分组专注时间情况',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        xAxis: {
+          type: 'category',
+          data: taskListNames
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            name: '完成任务数量',
+            type: 'bar',
+            data: focusTimes
+          }
+        ]
+      };
+      lineChart.setOption(lineOption);
+    });
+  });
+
+  getTask('all').then(res => {
+    // console.log('res', res.object)
+    total.value = res.object.totalTaskNum;
+    finish.value = res.object.finishedTaskNum;
+    unfinish.value = res.object.unfinishedTaskNum;
+
+  })
+
+  getTask('today').then(res => {
+    // console.log('res', res.object)
+    let pieChart = echarts.init(document.getElementById('pieChart'));
+    let pieOption = {
+      title: {
+        text: '今日任务完成情况',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left'
+      },
+      series: [
+        {
+          name: '任务状态',
+          type: 'pie',
+          radius: '50%',
+          data: [
+            { value: res.object.finishedTaskNum, name: '已完成' },
+            { value: res.object.unfinishedTaskNum, name: '进行中' },
+          ],
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
           }
         }
-      }
-    ]
-  };
-  pieChart.setOption(pieOption);
+      ]
+    };
+    pieChart.setOption(pieOption);
+  })
 
-  // 柱状图配置
-  let barChart = echarts.init(document.getElementById('barChart'));
-  let barOption = {
-    title: {
-      text: '任务分布情况',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'axis'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['一月', '二月', '三月', '四月', '五月', '六月']
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        name: '任务数量',
-        type: 'bar',
-        data: [10, 52, 200, 334, 390, 330]
-      }
-    ]
-  };
-  barChart.setOption(barOption);
-
-  // 折线图配置
-  let lineChart = echarts.init(document.getElementById('lineChart'));
-  let lineOption = {
-    title: {
-      text: '任务完成趋势',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'axis'
-    },
-    xAxis: {
-      type: 'category',
-      data: ['一月', '二月', '三月', '四月', '五月', '六月']
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        name: '完成任务数量',
-        type: 'line',
-        data: [120, 132, 101, 134, 90, 230, 210]
-      }
-    ]
-  };
-  lineChart.setOption(lineOption);
 });
 </script>
 

@@ -4,28 +4,23 @@
       <q-toolbar class="toolbar" style="height: 64px">
         <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
           <!--          <img src="https://cdn.quasar.dev/img/layout-gallery/logo-google.svg">-->
-<!--          <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>-->
+          <!--          <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>-->
           <div><img src="src/assets/mytodo.png" alt="😉𝑴𝒚𝑻𝒐𝒅𝒐" style="width: 130px; height: 75px"></div>
         </q-toolbar-title>
 
-        <q-space/>
+        <q-space />
 
         <!--        全局搜索功能   -->
-<!--        <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">-->
-<!--          <template v-slot:prepend>-->
-<!--            <q-icon v-if="search === ''" name="search"/>-->
-<!--            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>-->
-<!--          </template>-->
-<!--        </q-input>-->
+        <!--        <q-input class="toolbar-input" dense standout="bg-primary" v-model="search" placeholder="Search">-->
+        <!--          <template v-slot:prepend>-->
+        <!--            <q-icon v-if="search === ''" name="search"/>-->
+        <!--            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>-->
+        <!--          </template>-->
+        <!--        </q-input>-->
 
         <div class="current-task" :class="{ 'no-task': !currentTask.taskId }">
-          <q-chip
-            outline
-            color="primary"
-            text-color="white"
-            icon="event"
-            :class="{ 'no-task-chip': !currentTask.taskId }"
-          >
+          <q-chip outline color="primary" text-color="white" icon="event"
+            :class="{ 'no-task-chip': !currentTask.taskId }">
             当前任务：
             <div class="current-task-name">{{ currentTask.taskName }}</div>
           </q-chip>
@@ -39,33 +34,23 @@
         <!--          </q-menu>-->
         <!--        </q-btn>-->
         <div ref="timerContainerRef" class="timer-container animated-shake">
-          <q-btn
-            flat
-            dense
-            no-wrap
-            color="primary"
-            :icon="timerRunning ? 'stop_circle' : 'play_circle'"
-            no-caps
-            :label="timerRunning ? 'Stop Timer' : 'Start Timer'"
-            @click="toggleTimer"
-            class="q-ml-sm q-px-md"
-          />
+          <q-btn flat dense no-wrap color="primary" :icon="timerRunning ? 'stop_circle' : 'play_circle'" no-caps
+            :label="timerRunning ? 'Stop Timer' : 'Start Timer'" @click="toggleTimer" class="q-ml-sm q-px-md" />
           <div class="timer-display">
             <!-- 显示计时时间 -->
             {{ formattedTime }}
           </div>
         </div>
 
-        <q-space/>
+        <q-space />
 
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn round dense flat color="grey-8" icon="notifications">
+          <!-- <q-btn round dense flat color="grey-8" icon="notifications">
             <q-badge color="red" text-color="white" floating>
               2
             </q-badge>
-            <!--  TODO: ↑数字2待绑定          -->
             <q-tooltip>Notifications</q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <q-btn round flat>
             <q-avatar size="26px">
               <img alt="user" src="https://cdn.quasar.dev/img/boy-avatar.png">
@@ -77,37 +62,37 @@
     </q-header>
 
     <q-page-container class="page-container">
-      <router-view/> <!--  NOTES:  这里是路由的位置  -->
+      <router-view /> <!--  NOTES:  这里是路由的位置  -->
 
       <!--       NOTES: 侧边栏（非折叠）-->
       <q-page-sticky v-if="$q.screen.gt.sm" expand position="left">
         <div class="fit q-pt-xl q-px-sm column">
-<!--          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/dashboard">-->
-<!--            <q-icon size="22px" name="photo"/>-->
-<!--            <div class="side-btn__label">Dashboard</div>-->
-<!--          </q-btn>-->
+          <!--          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/dashboard">-->
+          <!--            <q-icon size="22px" name="photo"/>-->
+          <!--            <div class="side-btn__label">Dashboard</div>-->
+          <!--          </q-btn>-->
 
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/todo">
-            <q-icon size="22px" name="collections_bookmark"/>
+            <q-icon size="22px" name="collections_bookmark" />
             <div class="side-btn__label">TodoList</div>
           </q-btn>
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/today">
-            <q-icon size="22px" name="assistant"/>
+            <q-icon size="22px" name="assistant" />
             <div class="side-btn__label">Today</div>
             <q-badge floating color="red" text-color="white" style="top: 8px; right: 16px">
-              {{todayTaskNum}}
+              {{ todayTaskNum }}
             </q-badge>
           </q-btn>
 
-<!--          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/matrix">-->
-<!--            <q-icon size="22px" name="group"/>-->
-<!--            <div class="side-btn__label">Matrix</div>-->
-<!--          </q-btn>-->
+          <!--          <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/matrix">-->
+          <!--            <q-icon size="22px" name="group"/>-->
+          <!--            <div class="side-btn__label">Matrix</div>-->
+          <!--          </q-btn>-->
 
           <q-btn round flat color="grey-8" stack no-caps size="26px" class="side-btn" clickable to="/statistic">
-            <q-icon size="22px" name="import_contacts"/>
+            <q-icon size="22px" name="import_contacts" />
             <div class="side-btn__label">Statistic</div>
           </q-btn>
         </div>
@@ -117,11 +102,11 @@
 </template>
 
 <script setup>
-import {ref, computed, onUnmounted, watch, nextTick, onMounted} from 'vue'
-import {createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer} from "src/api/timer";
-import {useRoute, useRouter} from "vue-router";
-import {getSimpleTaskInfo} from "src/api/task";
-import {getMyDayTasksWithSimpleInfo} from "src/api/my-day";
+import { ref, computed, onUnmounted, watch, nextTick, onMounted } from 'vue'
+import { createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer } from "src/api/timer";
+import { useRoute, useRouter } from "vue-router";
+import { getSimpleTaskInfo } from "src/api/task";
+import { getMyDayTasksWithSimpleInfo } from "src/api/my-day";
 
 const todayTaskNum = ref(0); // 今日任务数量
 
@@ -273,22 +258,22 @@ onUnmounted(() => {
 //数据
 const links1 = [
   // {icon: 'photo', text: 'Dashboard', url: '/dashboard'},
-  {icon: 'assistant', text: 'Today', url: '/today'},
-  {icon: 'photo_album', text: 'TodoList', url: '/todo'},
-  {icon: '', text: 'Group', url: '/group'},
+  { icon: 'assistant', text: 'Today', url: '/today' },
+  { icon: 'photo_album', text: 'TodoList', url: '/todo' },
+  { icon: '', text: 'Group', url: '/group' },
   // {icon: 'people', text: 'Matrix', url: '/matrix'},
-  {icon: 'book', text: 'Statistic', url: '/statistic'}
+  { icon: 'book', text: 'Statistic', url: '/statistic' }
 ];
 
 const links2 = [
-  {icon: 'archive', text: 'Archive', url: '/archive'},
-  {icon: 'delete', text: 'Trash', url: '/trash'}
+  { icon: 'archive', text: 'Archive', url: '/archive' },
+  { icon: 'delete', text: 'Trash', url: '/trash' }
 ];
 
 const links3 = [
-  {icon: 'settings', text: 'Settings'},
-  {icon: 'help', text: 'Help & Feedback'},
-  {icon: 'get_app', text: 'App Downloads'}
+  { icon: 'settings', text: 'Settings' },
+  { icon: 'help', text: 'Help & Feedback' },
+  { icon: 'get_app', text: 'App Downloads' }
 ];
 // const createMenu: [
 //   { icon: 'photo_album', text: 'Today Todo' },
@@ -365,10 +350,13 @@ const links3 = [
 }
 
 /* 确保输入框、任务和计时器容器在水平方向上对齐 */
-.toolbar-input, .current-task, .timer-container {
+.toolbar-input,
+.current-task,
+.timer-container {
   display: flex;
   align-items: center;
-  margin-right: 16px; /* 可以根据需要调整间距 */
+  margin-right: 16px;
+  /* 可以根据需要调整间距 */
 }
 
 .timer-display {
@@ -379,7 +367,8 @@ const links3 = [
 }
 
 .current-task {
-  margin-top: 0; /* 移除上边距，使其与其他组件对齐 */
+  margin-top: 0;
+  /* 移除上边距，使其与其他组件对齐 */
 }
 
 .no-task {
@@ -392,7 +381,8 @@ const links3 = [
 
 .toolbar-input,
 .timer-container {
-  flex: none; /* 确保输入框和计时器不伸缩 */
+  flex: none;
+  /* 确保输入框和计时器不伸缩 */
 }
 
 .current-task-name {
@@ -401,26 +391,31 @@ const links3 = [
 
 .animated-shake {
   animation-name: shake;
-  animation-duration: 0.5s; /* 动画持续时间 */
-  animation-timing-function: ease-in-out; /* 缓动函数 */
+  animation-duration: 0.5s;
+  /* 动画持续时间 */
+  animation-timing-function: ease-in-out;
+  /* 缓动函数 */
 }
 
 @keyframes shake {
   0% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(-5px);
   }
+
   50% {
     transform: translateX(5px);
   }
+
   75% {
     transform: translateX(-5px);
   }
+
   100% {
     transform: translateX(0);
   }
 }
-
 </style>
