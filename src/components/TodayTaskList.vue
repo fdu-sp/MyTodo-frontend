@@ -96,7 +96,13 @@ function loadTodayTaskListData(listId) {
     getRecommendOfMyDay().then(data => {
       tasks.value = data.object.uncompletedTasksEndBeforeToday.taskSimpleRespList;
     })
-  } else { // 如果是普通清单
+  } else if (listId == -5) {
+    listName.value = "🌳最近添加";
+    getRecommendOfMyDay().then(data => {
+      tasks.value = data.object.latestCreatedTasks.taskSimpleRespList;
+    })
+  }
+  else { // 如果是普通清单
     getTaskListDetailInfo(listId)
       .then((data) => {
         listName.value = data.name;
