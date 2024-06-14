@@ -71,7 +71,14 @@
     <div>
       <!--      <q-toggle v-model="editableCompleted" label="已完成"/>-->
       <q-btn icon="save" label="保存" @click="saveTask" style="margin-right: 15px;"/>
-      <q-btn icon="add" color="secondary" glossy label="添加到“我的一天”" @click="saveTodayTask"/>
+        <q-toggle
+          v-model="inMyDay"
+          icon="alarm"
+          label="添加到“我的一天”"
+          @update:model-value="handleToggle"
+          color="secondary"
+          class="custom-toggle"
+        />
     </div>
   </div>
   <div v-else class="no-task">
@@ -82,11 +89,12 @@
 
 
 <script setup>
-import {ref, watch} from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 import {updateTask} from 'src/api/task'; // 导入 updateTask 方法
 import {Notify, useQuasar} from 'quasar';
 import taskEventEmitter, {TASK_EVENTS} from "src/event/TaskEventEmitter";
-import {addTaskToMyDay} from "src/api/my-day";
+import {addTaskToMyDay, removeTaskFromMyDay} from "src/api/my-day";
+import {getAllTags} from "src/api/tag";
 
 // 使用 useQuasar 插件
 const $q = useQuasar();
@@ -96,6 +104,7 @@ const editableDescription = ref('');
 const editableEndDate = ref('');
 const editableCompleted = ref(false);
 const editableRemindTimeStamp = ref('');
+const inMyDay = ref(false);
 
 // 定义 props 来接收父组件传递的任务详情
 const props = defineProps({
@@ -111,6 +120,7 @@ watch(() => props.taskWithDetailInfo, (newVal) => {
     editableDescription.value = newVal.taskContentInfo.description;
     editableEndDate.value = newVal.taskTimeInfo.endDate;
     editableCompleted.value = newVal.completed;
+    inMyDay.value = newVal.inMyDay;
   }
 }, {immediate: true});
 
@@ -166,8 +176,17 @@ function saveTask() {
     });
 }
 
+function handleToggle(value) {
+  if (value) {
+    addToTodayTask();
+  } else {
+    deleteFromTodayTask();
+  }
+  taskEventEmitter.emit(TASK_EVENTS.TASK_ADDED_TO_TODAY, props.taskWithDetailInfo.id);
+}
+
 // 保存到“我的一天”
-function saveTodayTask() {
+function addToTodayTask() {
   let taskId = props.taskWithDetailInfo.id;
 
   addTaskToMyDay(taskId)
@@ -182,6 +201,24 @@ function saveTodayTask() {
     })
     .catch((err) => {
       console.error('保存任务失败:', err);
+    });
+}
+
+function deleteFromTodayTask() {
+  let taskId = props.taskWithDetailInfo.id;
+
+  removeTaskFromMyDay(taskId)
+    .then(() => {
+      Notify.create({
+        message: "成功移除",
+        type: 'positive',
+        position: 'top',
+        timeout: 3000,
+      });
+      taskEventEmitter.emit(TASK_EVENTS.TASK_ADDED_TO_TODAY, taskId);
+    })
+    .catch((err) => {
+      console.error('移除任务失败:', err);
     });
 }
 </script>

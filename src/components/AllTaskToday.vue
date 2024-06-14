@@ -71,6 +71,10 @@ const taskGroups = ref([
       {
         id: -4,
         name: "❗️已过期",
+      },
+      {
+        id: -5,
+        name: "🌳最近添加"
       }
     ],
   }
@@ -135,6 +139,7 @@ function loadAllRecommendTasks() {
       taskGroups.value[1].taskLists[0].count = data.object.tasksEndInThreeDays.taskSimpleRespList.length;
       taskGroups.value[1].taskLists[1].count = data.object.tasksEndInFourToSevenDays.taskSimpleRespList.length;
       taskGroups.value[1].taskLists[2].count = data.object.uncompletedTasksEndBeforeToday.taskSimpleRespList.length;
+      taskGroups.value[1].taskLists[3].count = data.object.latestCreatedTasks.taskSimpleRespList.length;
     })
     .catch((err) => {
       console.error('Failed to load all tasks:', err);
