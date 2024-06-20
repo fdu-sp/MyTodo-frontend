@@ -44,13 +44,13 @@ quasar build
 构建 docker 镜像
 
 ```shell
-docker build -t mytodo-frontend:1.0.0 .
+docker build -t mytodo-frontend:latest .
 ```
 
 本地运行
 
 ```bash
-docker run -d --name mytodo-frontend -p 8081:80 mytodo-frontend:1.0.0
+docker run -d --name mytodo-frontend -p 8081:80 mytodo-frontend:latest
 ```
 
 访问：http://localhost:8081
