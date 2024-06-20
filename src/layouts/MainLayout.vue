@@ -5,7 +5,7 @@
         <q-toolbar-title v-if="$q.screen.gt.sm" shrink class="row items-center no-wrap">
           <!--          <img src="https://cdn.quasar.dev/img/layout-gallery/logo-google.svg">-->
           <!--          <span class="q-ml-sm">😉𝑴𝒚𝑻𝒐𝒅𝒐</span>-->
-          <div><img src="src/assets/mytodo.png" alt="😉𝑴𝒚𝑻𝒐𝒅𝒐" style="width: 130px; height: 75px"></div>
+          <div><img src="~assets/mytodo.png" alt="😉𝑴𝒚𝑻𝒐𝒅𝒐" style="width: 130px; height: 75px"></div>
         </q-toolbar-title>
 
         <q-space/>
@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onUnmounted, watch, nextTick, onMounted, onBeforeUnmount} from 'vue'
+import {computed, nextTick, onBeforeUnmount, onMounted, onUnmounted, ref} from 'vue'
 import {createNewTimer, getTheTaskCurrentlyBeingTimed, updateTimer} from "src/api/timer";
 import {useRoute, useRouter} from "vue-router";
 import {getSimpleTaskInfo} from "src/api/task";
@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
 // 任务完成时的处理
 function handleTaskCompleted(taskId) {
   calTodayTaskNum();
-  if(taskId && Number(currentTask.value.taskId) === Number(taskId)) {
+  if (taskId && Number(currentTask.value.taskId) === Number(taskId)) {
     stopLocalTimer();
     timerId.value = null; //重新设置为null
   }
