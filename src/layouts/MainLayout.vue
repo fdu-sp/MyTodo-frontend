@@ -171,6 +171,7 @@ function handleTaskCompleted(taskId) {
   calTodayTaskNum();
   if(taskId && Number(currentTask.value.taskId) === Number(taskId)) {
     stopLocalTimer();
+    timerId.value = null; //重新设置为null
   }
 }
 
@@ -217,6 +218,7 @@ function checkForTimedTasksAtStartup() {
 function toggleTimer() {
   if (timerRunning.value) { // 停止计时
     stopTimer();
+    console.log("停止计时器调用！")
   } else { // 开始计时
     if (!timerInterval) {
       currentTime.value = startTime.value = Date.now();
@@ -248,11 +250,11 @@ function stopLocalTimer() {
   setTimeout(() => {
     currentTime.value = startTime.value;
   }, 500);
-  timerId.value = null; //重新设置为null
 }
 
 // 停止后端计时器
 function stopRemoteTimer() {
+  console.log("timerId: ", timerId.value)
   if (timerId.value != null) {
     updateTimer(timerId.value).then(data => {
       console.log("更新计时器：", data);
@@ -264,6 +266,7 @@ function stopRemoteTimer() {
 function stopTimer() {
   stopLocalTimer();
   stopRemoteTimer();
+  timerId.value = null; //重新设置为null
 }
 
 function calTodayTaskNum() {
