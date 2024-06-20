@@ -128,7 +128,7 @@ const timerRunning = ref(false);
 const startTime = ref(0);
 const currentTime = ref(0);
 let timerInterval = null;
-const timerId = ref(null); //当前正在计时的任务
+const timerId = ref(null); //计时器的id
 const timerContainerRef = ref(null)
 const search = ref('')
 
